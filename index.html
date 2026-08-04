@@ -1,0 +1,1854 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>求职全流程 AI 智能体 · 22 屏原型</title>
+<style>
+/* ─────────────────────────────────────────────────────────────────────────
+ * design-systems/apple/tokens.css
+ *
+ * Structured token bindings for the Apple-inspired design system —
+ * a precision editorial language built around white-space discipline,
+ * SF Pro typography, and a single restrained blue accent. This file
+ * is the *machine-readable* form of the values described in
+ * `DESIGN.md`. Agents are expected to paste the `:root { … }` block
+ * verbatim into the first `<style>` of every artifact they generate
+ * against this design system, then reference everything via
+ * var(--name) from then on.
+ *
+ * Why this file exists:
+ *   DESIGN.md tells humans that Apple uses "Pale Apple Gray (#f5f5f7)
+ *   as the main light surface" and "Apple Action Blue (#0071e3) as the
+ *   primary accent", but agents have to translate those prose names
+ *   into the standard token names the lint enforces (`--surface`,
+ *   `--accent`). That translation step is where token misuse happens.
+ *   This file pre-translates the brand once, so agents copy structure
+ *   instead of inventing it.
+ *
+ * Brand-specific schema decisions (non-obvious bindings worth flagging
+ * for reviewers and downstream brand authors):
+ *   1. We bind --surface-warm to a real intermediate tier (#fbfbfd),
+ *      NOT an alias of --surface. Apple's surface ladder genuinely has
+ *      three light stops — pure white retail canvas, near-white
+ *      brightness-shifted bands, and pale Apple gray feature fields —
+ *      so collapsing surface-warm would erase a real brand feature.
+ *   2. We bind --fg-2, --meta, and --border-soft to independent values
+ *      rather than aliases. Apple's neutral text ramp is famously
+ *      four-stop (Near-Black Ink → Utility Dark Gray → Secondary
+ *      Neutral Gray → Mid Border Gray) and the schema's B-slots map
+ *      onto it cleanly.
+ *   3. --radius-pill is bound to 980px, not 9999px. Apple's signature
+ *      capsule CTA literally uses 980px in published CSS, and the
+ *      number is itself a brand-recognisable detail; we keep it.
+ *   4. --accent-hover lifts (#0077ed) instead of darkening. Apple's
+ *      live blue buttons brighten slightly on hover rather than mix
+ *      toward black; the schema's default formula would fight that.
+ *      --accent-active darkens to #0066cc — the documented Body Link
+ *      Blue — so the active state aligns with Apple's read-link tone.
+ *   5. --tracking-display is -0.015em. The DESIGN.md hierarchy lists
+ *      -1.2px on 80px hero (-0.015em); tighter than that breaks at
+ *      smaller display sizes, looser loses Apple's machined feel.
+ *   6. --section-y-desktop is 100px. Apple's billboard chapters lean
+ *      noticeably more generous than the schema default of 80px — the
+ *      breathing room is what lets product imagery do the talking.
+ *   7. --ease-standard is cubic-bezier(0.28, 0, 0.22, 1), an Apple-
+ *      flavoured smooth-out instead of the schema default. Apple
+ *      transitions decelerate hard then settle, never bounce.
+ *
+ * Contract sources:
+ *   - Standard token names: design-systems/_schema/tokens.schema.ts
+ *       (TOKEN_SCHEMA — every name below appears there or as an
+ *        explicit B-slot alias.)
+ *   - A2 fallback values: design-systems/_schema/defaults.css
+ *       (We override --motion-base, --ease-standard, --elev-raised,
+ *        --focus-ring, --radius-pill; the rest match defaults.)
+ *   - Lint enforcement: apps/daemon/src/lint-artifact.ts
+ *       (raw-hex >12 outside :root → P1; non-token accent → P0)
+ *
+ * Keep this file additive: never invent token names not also documented
+ * in DESIGN.md or the shared schema. New Apple-derived sub-brands
+ * cloning this template should overwrite values, not rename keys.
+ * ─────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* ─── Surface (3 levels) ──────────────────────────────────────────
+   * Apple's binary section rhythm alternates pure white retail/hero
+   * canvases with pale Apple gray feature fields. We bind --bg to
+   * the white canvas (the most common default Apple page background)
+   * and --surface to the pale gray that cards and feature bands lift
+   * onto. --surface-warm is bound to a real third tier (#fbfbfd) —
+   * the near-white brightness shift that appears between hero and
+   * pale-gray bands on apple.com. Collapsing it to var(--surface)
+   * would erase a real brand feature, so we keep it independent. */
+  --bg: #ffffff;
+  --surface: #f5f5f7;
+  --surface-warm: #fbfbfd;
+
+  /* ─── Foreground ramp (4 levels) ─────────────────────────────────
+   * Apple's text neutrals are explicitly named in DESIGN.md §2:
+   * Near-Black Ink (primary), Utility Dark Gray (secondary text /
+   * dark-neutral surfaces in store contexts), Secondary Neutral Gray
+   * (helper copy / tertiary metadata), Mid Border Gray (the strongest
+   * neutral, used for stronger field outlines and the most-restrained
+   * caption tier). We bind all four — Apple genuinely walks the full
+   * ramp, so collapsing --fg-2 or --meta to siblings would flatten
+   * the brand.
+   *
+   * Note that none of these are pure black (#000000). #000000 is
+   * reserved for hero canvases and dark chapters; for body type on
+   * white, #1d1d1f gives the slight warmth that reads as Apple. */
+  --fg: #1d1d1f;
+  --fg-2: #424245;
+  --muted: #6e6e73;
+  --meta: #86868b;
+
+  /* ─── Border (2 levels) ──────────────────────────────────────────
+   * Soft Border Gray (#d2d2d7) is Apple's default divider weight and
+   * card-edge color. --border-soft is bound to a lighter near-neutral
+   * (#e8e8ed) for inner row separators in dense retail tables and
+   * configurator option lists, where the d2d2d7 hairline would
+   * over-compete with the option labels. */
+  --border: #d2d2d7;
+  --border-soft: #e8e8ed;
+
+  /* ─── Accent ──────────────────────────────────────────────────────
+   * Apple Action Blue — the system's only persistent chromatic move.
+   * DESIGN.md §7 ("Don't introduce broad secondary accent palettes
+   * that compete with Apple blue") makes this a one-color brand for
+   * action and link semantics; the schema's hard cap of ≤2 visible
+   * accent uses per screen aligns naturally. */
+  --accent: #0071e3;
+  --accent-on: #ffffff; /* white label on the blue fill */
+
+  /* ─── Accent states ───────────────────────────────────────────────
+   * Apple's live primary buttons LIGHTEN on hover (the blue gains
+   * luminance) and darken on press. The schema's default black-mix
+   * formula would fight that motion, so we hand-pick both values:
+   *   - hover: #0077ed (≈ 4% brighter than --accent)
+   *   - active: #0066cc (the documented Body Link Blue from DESIGN.md
+   *             §2, which doubles cleanly as the press tone)
+   *
+   * Schema rule: every brand provides --accent-hover and
+   * --accent-active. The binding strategy (formula / hand-picked /
+   * identity) is brand-decided. Default uses formulas; kami uses
+   * identity + hand-picked; Apple uses hand-picked in both
+   * directions. */
+  --accent-hover: #0077ed;
+  --accent-active: #0066cc;
+
+  /* ─── Semantic ────────────────────────────────────────────────────
+   * Apple's DESIGN.md §2 explicitly notes "no distinct semantic
+   * palette was consistently visible in the extracted surface set" —
+   * so we inherit the schema defaults verbatim. Apple artifacts
+   * almost never need success / warn / danger; when they do, the
+   * defaults are restrained enough not to fight the blue accent.
+   * Reserve under 5% of any surface area regardless. */
+  --success: #16a34a;
+  --warn:    #eab308;
+  --danger:  #dc2626;
+
+  /* ─── Typography ──────────────────────────────────────────────────
+   * Apple's documented split is two SF Pro families: SF Pro Display
+   * for hero / merchandising headings, SF Pro Text for navigation,
+   * controls, and dense commerce copy. We mirror the exact published
+   * fallback chain (SF Pro Icons → Helvetica Neue → Helvetica → Arial
+   * → sans-serif) so artifacts rendered on non-macOS clients land on
+   * the closest practical substitute.
+   *
+   * SF Mono leads the monospace stack — Apple's brand mono — with
+   * the schema fallbacks behind it for portability. */
+  --font-display:
+    "SF Pro Display", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body:
+    "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono:
+    "SF Mono", ui-monospace, "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* Type scale (px) — derived from DESIGN.md §3 hierarchy table.
+   * Apple's body baseline is 17px (NOT the 16px web norm) because
+   * SF Pro Text was metrically tuned at 17 for Retina; rebinding
+   * --text-base to anything else collapses the brand's reading
+   * texture. The display ceiling is the 80px Hero Display XL. */
+  --text-xs:   12px;   /* Micro UI — fine print, micro labels */
+  --text-sm:   14px;   /* Control Label — buttons, helper labels */
+  --text-base: 17px;   /* Body Primary — Apple's reading baseline */
+  --text-lg:   21px;   /* Link/Action Heading — large promo links */
+  --text-xl:   28px;   /* Card/Product Title — tile-level naming */
+  --text-2xl:  40px;   /* Product Heading — campaign section titles */
+  --text-3xl:  56px;   /* Hero Display L — homepage hero moments */
+  --text-4xl:  80px;   /* Hero Display XL — Environment / store hero */
+
+  /* Apple's leading envelope is unusually tight at the top of the
+   * scale (display sizes ride at 1.00–1.10) and unusually airy in
+   * the body (1.47, well above the web 1.4 default). Both numbers
+   * come straight from DESIGN.md §3. */
+  --leading-body:  1.47;   /* SF Pro Text body, 17px */
+  --leading-tight: 1.05;   /* Hero Display XL ceiling */
+
+  /* Display tracking compresses to -0.015em — the famous Apple
+   * machined-headline feel. DESIGN.md §3 lists -1.2px on 80px
+   * (≈ -0.015em); we bind a single em-value so the same rule applies
+   * across the display tiers. Body type runs at 0 / -0.374px and is
+   * left to component-level rules so as not to hurt readability. */
+  --tracking-display: -0.015em;
+
+  /* ─── Spacing ─────────────────────────────────────────────────────
+   * Apple's underlying grid is 8px (DESIGN.md §5), with utility
+   * micro-steps (2/4/6/7/8/9/10) for precision alignment. The shared
+   * schema's 4-8-12-16-20-24-32-48 scale fits cleanly — we inherit
+   * the defaults. Component-internal values that don't match a token
+   * (Apple's 14px or 17px utility intervals) stay inline at the
+   * call site rather than spawning extra spacing tokens. */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+
+  /* ─── Section rhythm ──────────────────────────────────────────────
+   * Apple's billboard chapters lean noticeably more generous than the
+   * schema default of 80px — broad top/bottom breathing room is what
+   * lets product imagery dominate the page. We bind 100/64/40, a
+   * slightly wider envelope than default's 80/48/32. */
+  --section-y-desktop: 100px;
+  --section-y-tablet:  64px;
+  --section-y-phone:   40px;
+
+  /* ─── Radius ──────────────────────────────────────────────────────
+   * Apple uses purposeful radius tiers (DESIGN.md §5 §7 — "don't
+   * flatten all corners to a single radius"). The mapping:
+   *   --radius-sm   → 8px   compact controls and fields
+   *   --radius-md   → 12px  standard buttons, configurator chips
+   *   --radius-lg   → 18px  cards, module frames, commerce panels
+   *   --radius-pill → 980px Apple's signature capsule CTA — we keep
+   *                          the literal value rather than collapse
+   *                          to 9999px because the number itself is
+   *                          a brand-recognisable detail in Apple's
+   *                          published CSS.
+   *
+   * The 28-36px spotlight tier and the 56px capsule sub-tier are
+   * component-internal one-offs and stay inline — they do not earn
+   * their own tokens until a second use appears. */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   18px;
+  --radius-pill: 980px;
+
+  /* ─── Elevation (3 levels) ────────────────────────────────────────
+   * Apple uses depth sparingly (DESIGN.md §6 — "depth is intentionally
+   * restrained"). Three sanctioned levels:
+   *   - flat   → none (the default; tonal contrast does the work)
+   *   - ring   → 0 0 0 1px var(--border) (border-led containment in
+   *              dense retail contexts)
+   *   - raised → 0 12px 32px rgba(0,0,0,0.08) (the soft Apple card
+   *              shadow; rgba 0.08 is the lower bound from DESIGN.md
+   *              §6's "0.08 → 0.22" range, which keeps cards from
+   *              feeling Material-flavoured)
+   *
+   * No fourth level — that would be the Material/neumorphism stack
+   * Apple consciously avoids. */
+  --elev-flat:   none;
+  --elev-ring:   0 0 0 1px var(--border);
+  --elev-raised: 0 12px 32px rgba(0, 0, 0, 0.08);
+
+  /* ─── Focus ring ──────────────────────────────────────────────────
+   * Apple's keyboard-focus signal is a soft blue glow at the action
+   * accent (DESIGN.md §6 — "Blue focus signal (#0071e3) for keyboard
+   * and selection emphasis"). We use a 4px ring at ~35% accent
+   * opacity, slightly larger than the schema's 3px default so it
+   * reads as the deliberate Apple halo rather than a generic outline.
+   * Implemented as a box-shadow so it layers outside the element
+   * without affecting layout. */
+  --focus-ring: 0 0 0 4px color-mix(in oklab, var(--accent), transparent 65%);
+
+  /* ─── Motion ──────────────────────────────────────────────────────
+   * Apple transitions decelerate hard and settle — never bounce,
+   * never spring past the target. We override the schema default
+   * easing with cubic-bezier(0.28, 0, 0.22, 1), the curve Apple
+   * uses on apple.com for hover and section reveals; --motion-base
+   * is bumped from 200ms → 220ms because Apple's micro-interactions
+   * carry slightly more cinematic weight than the web default.
+   * --motion-fast stays at 150ms for true micro-states (hover tints,
+   * focus, kbd press feedback). */
+  --motion-fast:   150ms;
+  --motion-base:   220ms;
+  --ease-standard: cubic-bezier(0.28, 0, 0.22, 1);
+
+  /* ─── Layout ──────────────────────────────────────────────────────
+   * Apple's marketing core is a constrained readable column with
+   * generous outer margins (DESIGN.md §5). 1024px max keeps lines
+   * inside the SF Pro Text comfortable-measure ceiling (~80ch at
+   * 17px) while leaving the chapter band full-bleed. Gutters step
+   * 22 → 18 → 16 across desktop / tablet / phone — slightly tighter
+   * than default to honor Apple's "broad horizontal breathing room
+   * but column-disciplined content" balance. */
+  --container-max:            1024px;
+  --container-gutter-desktop: 22px;
+  --container-gutter-tablet:  18px;
+  --container-gutter-phone:   16px;
+}
+
+/* ─── 品牌覆盖：求职智能体规格（用户提供，覆盖 Apple 默认蓝） ─────────── */
+:root {
+  --bg: #ffffff;
+  --surface: #f9fafb;
+  --surface-warm: #fbfbfd;
+  --fg: #111827;
+  --fg-2: #374151;
+  --muted: #6b7280;
+  --meta: #9ca3af;
+  --border: #e5e7eb;
+  --border-soft: #f3f4f6;
+  --accent: #4f46e5;
+  --accent-on: #ffffff;
+  --accent-hover: #6366f1;
+  --accent-active: #4338ca;
+  --white: #ffffff;
+  --black: #000000;
+  --success: #10b981;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --indigo-soft: #e0e7ff;
+  --indigo-bg: #eef2ff;
+  --gold-deep: #92400e;
+  --gold-bg: #fef3c7;
+  --chrome-ink: #14151a;
+  --chrome-ring: #34363f;
+  --desk: #e9ebf0;
+  --deskline: #d6d9e0;
+  --font-display: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 24px;
+  --shadow-card: 0 2px 8px rgba(17, 24, 39, 0.06);
+  --ease: cubic-bezier(0.28, 0, 0.22, 1);
+}
+
+/* ─── reset & base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--desk);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font: inherit; cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 45%, transparent);
+}
+p, h1, h2, h3, h4, h5 { margin: 0; }
+h1, h2, h3, h4 { text-wrap: balance; }
+p { text-wrap: pretty; }
+svg { display: block; }
+
+/* ─── 桌面舞台 ─────────────────────────────────────────────────────── */
+.stage { min-height: 100vh; display: flex; flex-direction: column; }
+.stagehead {
+  flex: none; height: 56px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 18px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--deskline);
+  position: sticky; top: 0; z-index: 50;
+}
+.stagehead .brand { font-weight: 700; font-size: 14px; letter-spacing: -0.01em; }
+.stagehead .brand small { color: var(--muted); font-weight: 500; margin-left: 8px; font-size: 12px; }
+.stagehead .spacer { flex: 1; }
+.stagehead .hint { font-size: 12px; color: var(--muted); }
+.btn-palette {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 18px;
+  border: 1px solid var(--deskline); background: var(--white);
+  font-size: 13px; font-weight: 600; color: var(--fg);
+  transition: background var(--motion-fast) var(--ease);
+}
+.btn-palette:hover { background: var(--surface); }
+.btn-palette .dots { color: var(--muted); font-size: 11px; letter-spacing: 0.08em; }
+.palette {
+  position: fixed; top: 64px; left: 18px; z-index: 60;
+  width: 312px; max-height: calc(100vh - 88px); overflow: auto;
+  background: var(--white); border: 1px solid var(--deskline);
+  border-radius: 16px; box-shadow: 0 24px 48px rgba(17, 24, 39, 0.18);
+  padding: 14px; display: none;
+}
+.palette.open { display: block; }
+.palette .pal-group { margin-bottom: 14px; }
+.palette .pal-group:last-child { margin-bottom: 0; }
+.palette .pal-head { font-size: 11px; color: var(--muted); font-weight: 600; margin: 0 4px 8px; letter-spacing: 0.05em; }
+.palette .pal-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.palette .pal-chip {
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--fg); font-size: 12px; border-radius: 8px;
+  padding: 5px 10px; transition: all var(--motion-fast) var(--ease);
+}
+.palette .pal-chip:hover { border-color: var(--accent); color: var(--accent); }
+.stagebody {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 22px 16px 40px;
+}
+.phone-wrap { flex: none; position: relative; }
+.phone {
+  width: 390px; height: 844px;
+  border-radius: 52px;
+  background: var(--bg);
+  box-shadow:
+    0 0 0 11px var(--chrome-ink),
+    0 0 0 13px var(--chrome-ring),
+    0 44px 90px rgba(15, 23, 42, 0.42);
+  position: relative; overflow: hidden;
+  transform-origin: top left;
+}
+
+/* ─── 状态栏 ───────────────────────────────────────────────────────── */
+.statusbar {
+  position: absolute; top: 0; left: 0; right: 0; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 30px; font-size: 15px; font-weight: 600;
+  color: var(--fg); z-index: 5; pointer-events: none;
+}
+.island {
+  position: absolute; top: 13px; left: 50%; transform: translateX(-50%);
+  width: 118px; height: 32px; background: var(--black); border-radius: 20px; z-index: 6;
+}
+.statusbar .sb-right { display: flex; align-items: center; gap: 7px; }
+.sig { display: flex; align-items: flex-end; gap: 2px; }
+.sig i { display: block; width: 3px; border-radius: 1px; background: var(--fg); }
+.sig i:nth-child(1) { height: 5px; } .sig i:nth-child(2) { height: 7px; }
+.sig i:nth-child(3) { height: 9px; } .sig i:nth-child(4) { height: 11px; }
+.batt { width: 23px; height: 11px; border: 1.4px solid var(--fg); border-radius: 3px; position: relative; padding: 1.5px; }
+.batt::after { content: ''; position: absolute; right: -3px; top: 2.5px; width: 2px; height: 4px; border-radius: 1px; background: var(--fg); }
+.batt i { display: block; height: 100%; width: 78%; background: var(--fg); border-radius: 1px; }
+
+/* ─── 屏幕容器 ─────────────────────────────────────────────────────── */
+.screens { position: absolute; inset: 0; }
+.screen {
+  position: absolute; inset: 0; z-index: 2;
+  padding: 54px 20px 96px;
+  overflow-y: auto; scrollbar-width: none;
+  background: var(--bg);
+  display: none;
+}
+.screen::-webkit-scrollbar { display: none; }
+.screen.active { display: block; animation: scr-in 0.26s var(--ease); }
+@keyframes scr-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+
+/* ─── TabBar ───────────────────────────────────────────────────────── */
+.tabbar {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 6;
+  height: 76px;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  padding: 6px 8px 22px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid var(--border-soft);
+}
+.tab {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  border: 0; background: none; color: var(--muted); font-size: 10px;
+  transition: color var(--motion-fast) var(--ease);
+}
+.tab svg { width: 21px; height: 21px; }
+.tab.active { color: var(--accent); font-weight: 600; }
+.tab:hover { color: var(--fg); }
+.home-indicator {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 124px; height: 5px; border-radius: 3px; background: var(--fg); z-index: 7; opacity: 0.85;
+}
+
+/* ─── 通用排版 ─────────────────────────────────────────────────────── */
+h1.page { font-family: var(--font-display); font-size: 22px; font-weight: 700; margin: 14px 0 6px; letter-spacing: -0.015em; }
+.greet { font-size: 18px; font-weight: 700; margin-top: 4px; font-family: var(--font-display); }
+.sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; margin: 24px 0 12px; display: flex; align-items: center; justify-content: space-between; }
+.link-inline { background: none; border: 0; color: var(--accent); font-size: 12px; font-weight: 600; padding: 2px; }
+.link-inline:hover { color: var(--accent-active); }
+.navhead { display: flex; align-items: center; height: 44px; margin: 8px -4px 4px; position: relative; }
+.navhead .back {
+  width: 38px; height: 38px; border: 0; background: none; color: var(--fg);
+  display: grid; place-items: center; border-radius: 50%;
+}
+.navhead .back:hover { background: var(--surface); }
+.navhead .back svg { width: 22px; height: 22px; }
+.navhead .title { position: absolute; left: 0; right: 0; text-align: center; font-size: 17px; font-weight: 600; pointer-events: none; }
+.navhead .right { margin-left: auto; font-size: 12px; font-weight: 700; }
+.navhead .right.orange { color: var(--warn); }
+.q-progress { font-size: 12px; color: var(--muted); text-align: center; margin: 4px 0 14px; }
+.q-progress b { color: var(--accent); font-weight: 700; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* ─── 按钮 ─────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 0; border-radius: var(--radius-pill);
+  padding: 12px 18px; font-size: 14px; font-weight: 600;
+  transition: transform 0.05s ease, background var(--motion-fast) var(--ease), opacity var(--motion-fast) var(--ease);
+}
+.btn:active { transform: translateY(1px) scale(0.99); }
+.btn-primary { background: var(--accent); color: var(--accent-on); }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary:active { background: var(--accent-active); }
+.btn-outline { background: var(--white); color: var(--accent); border: 1px solid var(--accent); }
+.btn-outline:hover { background: var(--indigo-bg); }
+.btn-danger { background: var(--danger); color: var(--white); }
+.btn-danger:hover { background: color-mix(in oklch, var(--danger) 88%, var(--black)); }
+.btn-block { width: 100%; margin-top: 22px; }
+.btn-ghost { background: none; color: var(--accent); padding: 12px 8px; }
+.btn-ghost:hover { color: var(--accent-active); }
+.btn-link-full { display: block; width: 100%; background: none; border: 0; color: var(--accent); font-size: 14px; font-weight: 600; text-align: center; margin-top: 18px; padding: 8px; }
+.btn-link-full:hover { color: var(--accent-active); }
+
+/* ─── 首页：数据宫格 / 快捷入口 / 职位卡 / banner ─────────────────────── */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.stat-cell {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 15px 0 13px; text-align: center; width: 100%;
+  box-shadow: var(--shadow-card); transition: all var(--motion-fast) var(--ease);
+}
+.stat-cell:hover { border-color: var(--accent); transform: translateY(-1px); }
+.stat-cell .n { display: block; font-family: var(--font-mono); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.stat-cell .n .u { font-size: 12px; font-weight: 600; color: var(--muted); margin-left: 2px; }
+.stat-cell .l { display: block; font-size: 13px; color: var(--muted); margin-top: 3px; }
+.quick-ctas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.btn-quick { padding: 12px 4px; font-size: 13px; border-radius: var(--radius-pill); }
+.job-card {
+  position: relative; display: block; width: 100%; text-align: left;
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 15px 38px 15px 16px; margin-bottom: 10px; box-shadow: var(--shadow-card);
+  transition: all var(--motion-fast) var(--ease);
+}
+.job-card:hover { border-color: var(--accent); }
+.job-card .co { font-size: 15px; font-weight: 600; }
+.job-card .loc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.job-card .tags { display: flex; gap: 6px; margin-top: 9px; }
+.job-card .chev { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--meta); font-size: 16px; }
+.banner {
+  display: block; width: 100%; text-align: left;
+  background: var(--indigo-bg); border: 1px solid color-mix(in oklch, var(--accent) 22%, transparent);
+  border-radius: var(--radius-lg); padding: 15px 16px; margin-top: 14px;
+  transition: all var(--motion-fast) var(--ease);
+}
+.banner:hover { border-color: var(--accent); }
+.banner h4 { font-family: var(--font-display); color: var(--accent); font-size: 15px; font-weight: 700; }
+.banner p { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* ─── 面试：英雄卡 / 方向卡 / 列表行 ─────────────────────────────────── */
+.hero-card {
+  background: var(--accent); border-radius: var(--radius-lg); color: var(--white);
+  padding: 20px 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+}
+.hero-card h3 { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--white); }
+.hero-card p { font-size: 13px; color: var(--indigo-soft); margin-top: 4px; }
+.hero-card .go {
+  flex: none; display: inline-flex; align-items: center; gap: 3px;
+  background: transparent; border: 1px solid rgba(255, 255, 255, 0.5);
+  color: var(--white); font-size: 13px; font-weight: 600; border-radius: 18px; padding: 8px 13px;
+  transition: background var(--motion-fast) var(--ease);
+}
+.hero-card .go:hover { background: rgba(255, 255, 255, 0.16); }
+.dir-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.dir {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 15px 0; font-size: 13px; font-weight: 600; color: var(--fg);
+  transition: all var(--motion-fast) var(--ease);
+}
+.dir:hover { border-color: var(--accent); color: var(--accent); }
+.dir.active { border-color: var(--accent); color: var(--accent); background: var(--indigo-bg); }
+.list { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; text-align: left; background: var(--white); border: 0;
+  padding: 13px 16px; font-size: 14px; color: var(--fg);
+  transition: background var(--motion-fast) var(--ease);
+}
+.row + .row { border-top: 1px solid var(--border-soft); }
+.row:hover { background: var(--surface); }
+.row .t { font-weight: 500; }
+.row .meta { font-size: 12px; color: var(--muted); }
+.row .chev { color: var(--meta); font-size: 15px; }
+.row .rcol { display: flex; align-items: center; gap: 10px; flex: none; }
+.score { font-family: var(--font-mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+.score.hi { color: var(--success); }
+.score.mid { color: var(--warn); }
+.btn-mini { background: var(--accent); color: var(--white); border: 0; border-radius: 8px; font-size: 12px; font-weight: 600; padding: 6px 12px; }
+.btn-mini:hover { background: var(--accent-hover); }
+.btn-mini.plain { background: var(--indigo-bg); color: var(--accent); }
+.btn-mini.plain:hover { background: color-mix(in oklch, var(--accent) 16%, var(--white)); }
+
+/* ─── 面试：进行页 ──────────────────────────────────────────────────── */
+.live-sub { font-size: 13px; color: var(--muted); text-align: center; }
+.live-timer { margin-left: auto; font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--fg); font-variant-numeric: tabular-nums; }
+.chat { display: flex; flex-direction: column; gap: 10px; margin: 16px 0 150px; }
+.bubble { max-width: 84%; padding: 11px 14px; font-size: 14px; line-height: 1.55; border-radius: 16px; }
+.bubble.ai { align-self: flex-start; background: var(--accent); color: var(--white); border-bottom-left-radius: 4px; }
+.bubble.user { align-self: flex-end; background: var(--white); border: 1px solid var(--border); border-bottom-right-radius: 4px; }
+.live-bar {
+  position: absolute; left: 0; right: 0; bottom: 84px; z-index: 4;
+  background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-soft); padding: 10px 16px 14px;
+}
+.input-row { display: flex; gap: 8px; }
+.input-row input {
+  flex: 1; min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-pill);
+  background: var(--surface); padding: 11px 16px; font-size: 14px; color: var(--fg);
+}
+.input-row input::placeholder { color: var(--meta); }
+.input-row input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 30%, transparent); }
+.btn-send { padding: 11px 18px; font-size: 14px; }
+.live-bar .btn-danger { width: 100%; margin-top: 10px; padding: 11px; font-size: 14px; }
+
+/* ─── 面试：报告 / 复盘 / 周报 ──────────────────────────────────────── */
+.report-hero {
+  background: var(--accent); border-radius: var(--radius-lg); color: var(--white);
+  padding: 22px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+}
+.score-big { font-family: var(--font-mono); font-size: 38px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.score-big .cap { font-family: var(--font-body); font-size: 16px; font-weight: 600; color: var(--indigo-soft); margin-left: 4px; }
+.beat { font-size: 12px; color: var(--indigo-soft); background: rgba(255, 255, 255, 0.14); border-radius: 8px; padding: 6px 10px; flex: none; }
+.chart-box { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px; margin-top: 14px; }
+.chart-box svg { width: 100%; height: auto; }
+.dims { display: flex; flex-direction: column; gap: 13px; margin-top: 4px; }
+.dim-row .top { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+.dim-row .top b { font-family: var(--font-mono); color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.dim-bar { height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+.dim-bar .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+.seg { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 3px; gap: 2px; }
+.seg-item { flex: 1; padding: 8px 0; font-size: 13px; border: 0; background: none; border-radius: 9px; color: var(--muted); font-weight: 500; transition: all var(--motion-fast) var(--ease); }
+.seg-item.on { background: var(--white); color: var(--fg); font-weight: 600; box-shadow: 0 1px 4px rgba(17, 24, 39, 0.12); }
+.seg-pane { display: none; }
+.seg-pane.on { display: block; }
+.metric-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.m-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 0; text-align: center; }
+.m-card .m-n { font-family: var(--font-mono); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.m-card .m-n.indigo { color: var(--accent); }
+.m-card .m-n.green { color: var(--success); }
+.m-card .m-n.orange { color: var(--warn); }
+.m-card .m-l { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.plan { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 4px 16px; }
+.plan-item { display: flex; align-items: flex-start; gap: 10px; padding: 13px 0; font-size: 14px; }
+.plan-item + .plan-item { border-top: 1px solid var(--border-soft); }
+.plan-item .ck { color: var(--accent); font-weight: 700; flex: none; }
+
+/* ─── 刷题 ─────────────────────────────────────────────────────────── */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 7px 15px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--white); font-size: 13px; color: var(--muted);
+  transition: all var(--motion-fast) var(--ease);
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip.on { background: var(--accent); border-color: var(--accent); color: var(--white); font-weight: 600; }
+.q-row {
+  display: block; width: 100%; text-align: left;
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow-card);
+  transition: all var(--motion-fast) var(--ease);
+}
+.q-row:hover { border-color: var(--accent); }
+.q-row .t { font-size: 14px; font-weight: 500; line-height: 1.45; }
+.tag { display: inline-flex; align-items: center; font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 3px 8px; }
+.tag.red { color: var(--danger); background: color-mix(in oklch, var(--danger) 8%, var(--white)); border-color: color-mix(in oklch, var(--danger) 30%, transparent); }
+.q-row .tag { margin-top: 9px; }
+.wrong-card {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  background: var(--gold-bg); border: 1px solid color-mix(in oklch, var(--gold-deep) 35%, transparent);
+  border-radius: var(--radius-lg); padding: 15px 16px; margin-top: 6px;
+  transition: all var(--motion-fast) var(--ease);
+}
+.wrong-card:hover { border-color: var(--gold-deep); }
+.wrong-card .bk { width: 22px; height: 22px; color: var(--gold-deep); flex: none; }
+.wrong-card .bk svg { width: 22px; height: 22px; }
+.wrong-card b { color: var(--gold-deep); font-size: 14px; font-weight: 700; }
+.wrong-card .cnt { color: var(--gold-deep); font-size: 13px; margin-left: auto; font-weight: 700; }
+.filter-row { display: flex; gap: 2px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 3px; }
+.fchip { flex: 1; padding: 8px 0; text-align: center; border: 0; border-radius: 6px; background: transparent; font-size: 13px; color: var(--fg-2); transition: all var(--motion-fast) var(--ease); }
+.fchip.on { background: var(--white); color: var(--accent); font-weight: 600; box-shadow: 0 1px 3px rgba(17, 24, 39, 0.1); }
+.cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cat {
+  background: var(--accent); color: var(--white); border: 0; border-radius: var(--radius-md);
+  padding: 22px 0; font-size: 15px; font-weight: 600;
+  transition: background var(--motion-fast) var(--ease);
+}
+.cat:hover { background: var(--accent-hover); }
+.cat:active { background: var(--accent-active); }
+.paper-list { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.paper-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; font-size: 14px; }
+.paper-row + .paper-row { border-top: 1px solid var(--border-soft); }
+.paper-row .cnt { font-family: var(--font-mono); font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.paper-row .meta { font-size: 12px; color: var(--muted); }
+.paper-row.timer { font-weight: 600; }
+.paper-row.timer .cnt { color: var(--fg); }
+.opt { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; font-size: 14px; color: var(--fg); transition: all var(--motion-fast) var(--ease); }
+.opt + .opt { margin-top: 10px; }
+.opt:hover { border-color: var(--accent); }
+.opt .k { width: 22px; height: 22px; border: 1px solid var(--border); border-radius: 50%; display: grid; place-items: center; font-size: 11px; color: var(--muted); flex: none; }
+.opt.sel { border-color: var(--accent); background: var(--indigo-bg); }
+.opt.sel .k { background: var(--accent); border-color: var(--accent); color: var(--white); }
+.q-stem { font-size: 16px; font-weight: 600; line-height: 1.6; margin-top: 6px; }
+.result-hero { background: var(--accent); border-radius: var(--radius-lg); color: var(--white); padding: 24px; text-align: center; }
+.r-score { font-family: var(--font-mono); font-size: 44px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.r-rate { font-size: 13px; color: var(--indigo-soft); margin-top: 2px; }
+.r-stats { display: flex; justify-content: center; gap: 22px; margin-top: 16px; font-size: 13px; }
+.r-stats .it { display: inline-flex; align-items: center; gap: 6px; color: var(--white); }
+.r-stats .dot { width: 8px; height: 8px; border-radius: 50%; }
+.r-stats .dot.ok { background: var(--success); }
+.r-stats .dot.bad { background: var(--danger); }
+.wrong-group { margin-bottom: 16px; }
+.wrong-group h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.wrong-group h4 span { color: var(--muted); font-weight: 500; font-size: 12px; margin-left: 4px; }
+
+/* ─── 投递 ─────────────────────────────────────────────────────────── */
+.stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 0; box-shadow: var(--shadow-card); }
+.s-cell { text-align: center; }
+.s-cell + .s-cell { border-left: 1px solid var(--border-soft); }
+.s-cell .n { font-family: var(--font-mono); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.s-cell .l { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.n-gray { color: var(--fg); } .n-orange { color: var(--warn); } .n-green { color: var(--success); } .n-red { color: var(--danger); }
+.app-card {
+  display: block; width: 100%; text-align: left;
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow-card);
+  transition: all var(--motion-fast) var(--ease);
+}
+.app-card:hover { border-color: var(--accent); }
+.app-card .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.app-card b { font-size: 15px; }
+.app-card .meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.pill-tag { font-size: 11px; color: var(--white); border-radius: var(--radius-sm); padding: 3px 9px; font-weight: 600; flex: none; }
+.pill-tag.orange { background: var(--warn); }
+.pill-tag.green { background: var(--success); }
+.pill-tag.red { background: var(--danger); }
+.pill-tag.gray { background: var(--muted); }
+.job-head { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 16px; box-shadow: var(--shadow-card); }
+.job-head h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+.job-head .co { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.salary { color: var(--accent); font-weight: 700; font-size: 15px; margin-top: 8px; font-family: var(--font-mono); }
+.bullets { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+.bullets ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+.bullets li { font-size: 14px; color: var(--fg); padding-left: 14px; position: relative; }
+.bullets li::before { content: '·'; position: absolute; left: 2px; color: var(--accent); font-weight: 700; }
+.match-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 14px; }
+.match-row b { font-family: var(--font-mono); color: var(--success); font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.timeline { padding-left: 26px; position: relative; }
+.tl-node { position: relative; padding-bottom: 24px; }
+.tl-node::before { content: ''; position: absolute; left: -19px; top: 22px; bottom: 0; width: 2px; background: var(--border); }
+.tl-node:last-child { padding-bottom: 4px; }
+.tl-node:last-child::before { display: none; }
+.tl-node .dot { position: absolute; left: -31px; top: 2px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; }
+.dot.done { background: var(--success); color: var(--white); }
+.dot.doing { background: var(--warn); color: var(--white); }
+.dot.todo { background: var(--white); border: 2px solid var(--border); }
+.tl-node .b { font-size: 15px; font-weight: 600; }
+.tl-node .m { font-size: 12px; color: var(--muted); margin-left: 8px; font-weight: 400; }
+.tl-node .tl-link { display: block; background: none; border: 0; color: var(--accent); font-size: 12px; padding: 0; margin-top: 6px; }
+.tl-node .tl-link:hover { color: var(--accent-active); }
+.tl-node .tl-sub { display: block; color: var(--meta); font-size: 12px; margin-top: 6px; }
+.offer-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.o-card { border-radius: var(--radius-lg); padding: 16px 14px; }
+.o-card.on { background: var(--accent); color: var(--white); }
+.o-card.off { background: var(--white); border: 1px solid var(--border); }
+.o-card b { font-size: 15px; font-weight: 700; display: block; text-align: center; }
+.o-rows { margin-top: 10px; }
+.o-row { display: flex; justify-content: space-between; font-size: 12px; padding: 7px 0; }
+.o-row + .o-row { border-top: 1px solid var(--border-soft); }
+.o-card.on .o-row + .o-row { border-top-color: rgba(255, 255, 255, 0.24); }
+.o-row .k { color: var(--muted); }
+.o-card.on .o-row .k { color: var(--indigo-soft); }
+.o-row .v { font-weight: 600; }
+.advice { background: color-mix(in oklch, var(--success) 8%, var(--white)); border: 1px solid color-mix(in oklch, var(--success) 32%, transparent); border-radius: var(--radius-lg); padding: 15px 16px; margin-top: 16px; }
+.advice h4 { color: var(--success); font-size: 14px; font-weight: 700; font-family: var(--font-display); }
+.advice p { font-size: 13px; color: var(--fg); margin-top: 6px; line-height: 1.55; }
+
+/* ─── 我的 ─────────────────────────────────────────────────────────── */
+.user-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: var(--white); display: grid; place-items: center; font-size: 20px; font-weight: 700; flex: none; }
+.user-row .name { font-size: 18px; font-weight: 700; font-family: var(--font-display); }
+.user-row .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.card-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; text-align: left; background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px 16px; font-size: 14px; font-weight: 500;
+  box-shadow: var(--shadow-card); transition: all var(--motion-fast) var(--ease);
+}
+.card-row:hover { border-color: var(--accent); }
+.card-row .accent-v { color: var(--accent); font-weight: 700; font-family: var(--font-mono); }
+.card-row .chev { color: var(--meta); font-size: 15px; }
+.card-row .prog { width: 100%; height: 6px; border-radius: 3px; background: var(--surface); overflow: hidden; margin-top: 10px; }
+.card-row .prog .bar { height: 100%; background: var(--accent); border-radius: 3px; }
+.member-card { background: var(--accent); border-radius: var(--radius-lg); padding: 20px 18px; color: var(--white); text-align: center; margin-top: 14px; }
+.member-card h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--white); }
+.member-card p { font-size: 12px; color: var(--indigo-soft); margin-top: 5px; }
+.btn-ad { margin-top: 13px; background: var(--accent-hover); color: var(--white); border: 0; border-radius: var(--radius-pill); padding: 9px 16px; font-size: 12px; font-weight: 600; transition: background var(--motion-fast) var(--ease); }
+.btn-ad:hover { background: color-mix(in oklch, var(--accent-hover) 86%, var(--white)); }
+.two-line { flex: 1; min-width: 0; }
+.two-line .t { font-size: 14px; font-weight: 500; }
+.two-line .d { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.goal-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 15px 16px; box-shadow: var(--shadow-card); }
+.goal-card .kv { display: flex; justify-content: space-between; font-size: 14px; padding: 7px 0; }
+.goal-card .kv + .kv { border-top: 1px solid var(--border-soft); }
+.goal-card .kv .k { color: var(--muted); font-size: 13px; }
+.goal-card .kv .v { font-weight: 600; }
+.dgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.dcell { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 11px 0; text-align: center; }
+.dcell .n { font-family: var(--font-mono); font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.dcell .l { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.sync-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--fg-2); background: var(--indigo-bg); border: 1px solid color-mix(in oklch, var(--accent) 20%, transparent); border-radius: var(--radius-md); padding: 12px 14px; }
+.sync-row .ck { color: var(--accent); font-weight: 700; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.field input {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-md);
+  background: var(--white); font-size: 14px; color: var(--fg);
+}
+.field input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklch, var(--accent) 28%, transparent); }
+.tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.tier { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 8px; text-align: center; background: var(--white); }
+.tier.on { border-color: var(--accent); background: var(--indigo-bg); }
+.tier.gold { border-color: var(--warn); background: color-mix(in oklch, var(--warn) 9%, var(--white)); }
+.tier h5 { font-size: 14px; font-weight: 700; font-family: var(--font-display); }
+.tier.on h5 { color: var(--accent); }
+.tier.gold h5 { color: var(--gold-deep); }
+.tier ul { list-style: none; margin: 9px 0 0; padding: 0; font-size: 11px; color: var(--muted); line-height: 1.8; }
+.tier.on ul, .tier.gold ul { color: var(--fg-2); }
+.benefit { display: flex; align-items: center; gap: 12px; padding: 13px 0; font-size: 14px; }
+.benefit + .benefit { border-top: 1px solid var(--border-soft); }
+.benefit .ic { width: 30px; height: 30px; border-radius: 10px; background: var(--indigo-bg); color: var(--accent); display: grid; place-items: center; flex: none; }
+.benefit .ic svg { width: 16px; height: 16px; }
+.benefit-list { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 4px 16px; }
+.quit-row { color: var(--danger); font-weight: 600; justify-content: center; }
+
+/* ─── Toast ────────────────────────────────────────────────────────── */
+.toast {
+  position: absolute; left: 50%; bottom: 104px; transform: translateX(-50%) translateY(8px);
+  z-index: 9; background: rgba(17, 24, 39, 0.92); color: var(--white); font-size: 13px;
+  padding: 10px 18px; border-radius: 20px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity var(--motion-base) var(--ease), transform var(--motion-base) var(--ease);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ─── 窄视口：手机画布等比缩小，不出现横向滚动 ───────────────────────── */
+@media (max-width: 460px) {
+  .stagehead .hint { display: none; }
+  .palette { left: 12px; right: 12px; width: auto; }
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <header class="stagehead" data-od-id="stagehead">
+    <span class="brand">求职全流程 AI 智能体<small>22 屏 · iPhone 390×844</small></span>
+    <span class="spacer"></span>
+    <span class="hint">底部 Tab 切模块 · 屏幕内点按跳转 · 面试页计时器走秒</span>
+    <button class="btn-palette" id="palette-toggle" data-od-id="screen-nav">屏幕导航 <span class="dots">▾</span></button>
+  </header>
+
+  <div class="palette" id="palette" data-od-id="screen-nav-panel"></div>
+
+  <main class="stagebody">
+    <div class="phone-wrap" id="phone-wrap">
+      <div class="phone" id="phone">
+        <div class="statusbar" data-od-id="statusbar">
+          <span>9:41</span>
+          <span class="sb-right">
+            <span class="sig"><i></i><i></i><i></i><i></i></span>
+            <span class="batt"><i></i></span>
+          </span>
+        </div>
+        <div class="island"></div>
+
+        <div class="screens">
+
+          <!-- ─── 1 首页 ───────────────────────────────────────────── -->
+          <section id="screen-home" class="screen active" data-od-id="screen-home">
+            <h1 class="page">求职全流程 AI 智能体</h1>
+            <p class="greet">你好，俊宇 👋</p>
+            <p class="sub">今天也为心动的 Offer 准备一下</p>
+            <div class="stat-grid">
+              <button class="stat-cell" data-go="interview"><span class="n">12<span class="u">次</span></span><span class="l">模拟面试</span></button>
+              <button class="stat-cell" data-go="practice"><span class="n">238<span class="u">题</span></span><span class="l">题库练习</span></button>
+              <button class="stat-cell" data-go="apply"><span class="n">9<span class="u">家</span></span><span class="l">投递记录</span></button>
+              <button class="stat-cell" data-go="apply-offer"><span class="n">2<span class="u">个</span></span><span class="l">收到 Offer</span></button>
+            </div>
+            <h2 class="sec">快捷入口</h2>
+            <div class="quick-ctas">
+              <button class="btn btn-primary btn-quick" data-go="interview-live" data-od-id="quick-start-interview">开始模拟</button>
+              <button class="btn btn-primary btn-quick" data-go="practice" data-od-id="quick-practice">智能刷题</button>
+              <button class="btn btn-primary btn-quick" data-go="apply" data-od-id="quick-apply">一键投递</button>
+            </div>
+            <h2 class="sec">为你推荐</h2>
+            <button class="job-card" data-go="apply-detail" data-od-id="rec-job-1">
+              <span class="co">字节跳动 · AI 产品经理</span>
+              <span class="loc">北京 · 25-40K · 16薪</span>
+              <span class="tags"><span class="tag">产品 · 高频</span><span class="tag">AI</span></span>
+              <span class="chev">›</span>
+            </button>
+            <button class="job-card" data-go="apply-detail" data-od-id="rec-job-2">
+              <span class="co">美团 · 产品运营</span>
+              <span class="loc">上海 · 20-35K · 15薪</span>
+              <span class="tags"><span class="tag">运营 · 中频</span></span>
+              <span class="chev">›</span>
+            </button>
+            <button class="banner" data-go="mine-profile" data-od-id="memory-banner">
+              <h4>记忆互通中台</h4>
+              <p>跨模块同步你的求职档案与偏好</p>
+            </button>
+          </section>
+
+          <!-- ─── 2 面试主页 ───────────────────────────────────────── -->
+          <section id="screen-interview" class="screen" data-od-id="screen-interview">
+            <h1 class="page">模拟面试</h1>
+            <div class="hero-card" data-od-id="interview-hero">
+              <div>
+                <h3>AI 模拟面试</h3>
+                <p>真实场景 · 实时反馈 · 智能复盘</p>
+              </div>
+              <button class="go" data-go="interview-live">开始模拟 ›</button>
+            </div>
+            <h2 class="sec">选择方向</h2>
+            <div class="dir-grid">
+              <button class="dir" data-live-dir="技术面" data-go="interview-live">技术面</button>
+              <button class="dir" data-live-dir="产品面" data-go="interview-live">产品面</button>
+              <button class="dir" data-live-dir="通用面" data-go="interview-live">通用面</button>
+            </div>
+            <h2 class="sec">最近练习</h2>
+            <div class="list">
+              <button class="row" data-go="interview-report" data-od-id="recent-1">
+                <span class="t">产品面 · 2026-07-20</span>
+                <span class="rcol"><span class="score hi">86</span><span class="chev">›</span></span>
+              </button>
+              <button class="row" data-go="interview-report" data-od-id="recent-2">
+                <span class="t">技术面 · 2026-07-15</span>
+                <span class="rcol"><span class="score mid">72</span><span class="chev">›</span></span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ─── 3 模拟面试进行页 ─────────────────────────────────── -->
+          <section id="screen-interview-live" class="screen" data-od-id="screen-interview-live">
+            <div class="navhead">
+              <button class="back" data-go="interview" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">模拟面试</span>
+              <span class="live-timer" id="live-timer" data-od-id="interview-timer">00:00</span>
+            </div>
+            <p class="live-sub">AI 模拟面试 · <span id="live-dir">产品岗</span></p>
+            <p class="q-progress">第 <b id="live-q">3</b> / 8 题</p>
+            <div class="chat" id="live-chat" data-od-id="interview-chat">
+              <div class="bubble ai">请介绍你做过最复杂的一个项目，并说明你的核心贡献。</div>
+              <div class="bubble user">我主导了一个校园协同平台，负责架构与核心模块开发。</div>
+            </div>
+            <div class="live-bar">
+              <div class="input-row">
+                <input id="live-input" placeholder="输入你的回答…" aria-label="输入回答" />
+                <button class="btn btn-primary btn-send" id="live-send" data-od-id="send-answer">发送</button>
+              </div>
+              <button class="btn btn-danger" data-go="interview-report" data-od-id="end-interview">结束面试并生成报告</button>
+            </div>
+          </section>
+
+          <!-- ─── 4 面试报告 ───────────────────────────────────────── -->
+          <section id="screen-interview-report" class="screen" data-od-id="screen-interview-report">
+            <div class="navhead">
+              <button class="back" data-go="interview" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">面试报告</span>
+            </div>
+            <div class="report-hero" data-od-id="report-score">
+              <div class="score-big">86 分<span class="cap">· 良好</span></div>
+              <span class="beat">超过 72% 用户</span>
+            </div>
+            <div class="chart-box"><div id="radar-main" data-od-id="radar-chart"></div></div>
+            <h2 class="sec">能力维度</h2>
+            <div class="dims" data-od-id="ability-dims">
+              <div class="dim-row"><div class="top"><span>沟通表达</span><b>92</b></div><div class="dim-bar"><div class="fill" style="width:92%"></div></div></div>
+              <div class="dim-row"><div class="top"><span>专业深度</span><b>86</b></div><div class="dim-bar"><div class="fill" style="width:86%"></div></div></div>
+              <div class="dim-row"><div class="top"><span>逻辑思维</span><b>78</b></div><div class="dim-bar"><div class="fill" style="width:78%"></div></div></div>
+              <div class="dim-row"><div class="top"><span>临场应变</span><b>81</b></div><div class="dim-bar"><div class="fill" style="width:81%"></div></div></div>
+              <div class="dim-row"><div class="top"><span>结构化</span><b>88</b></div><div class="dim-bar"><div class="fill" style="width:88%"></div></div></div>
+            </div>
+            <button class="btn btn-link-full" data-go="interview-review" data-od-id="full-review-link">查看完整复盘报告</button>
+          </section>
+
+          <!-- ─── 5 复盘追踪 ───────────────────────────────────────── -->
+          <section id="screen-interview-review" class="screen" data-od-id="screen-interview-review">
+            <div class="navhead">
+              <button class="back" data-go="interview" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">复盘追踪</span>
+            </div>
+            <div class="seg" data-od-id="review-seg">
+              <button class="seg-item on" data-seg="history">历史记录</button>
+              <button class="seg-item" data-seg="radar">能力雷达</button>
+              <button class="seg-item" data-seg="weekly">每周报告</button>
+              <button class="seg-item" data-seg="trend">进步追踪</button>
+            </div>
+            <div class="seg-body" style="margin-top:20px;">
+              <div id="rv-history" class="seg-pane on">
+                <h2 class="sec">练习历史</h2>
+                <div class="list">
+                  <div class="row"><span class="t">产品岗模拟 · 07-28 · 86分</span><span class="rcol"><button class="btn-mini plain" data-go="interview-report">复盘</button></span></div>
+                  <div class="row"><span class="t">技术岗模拟 · 07-20 · 72分</span><span class="rcol"><button class="btn-mini plain" data-go="interview-report">复盘</button></span></div>
+                  <div class="row"><span class="t">通用岗模拟 · 07-15 · 80分</span><span class="rcol"><button class="btn-mini plain" data-go="interview-report">复盘</button></span></div>
+                  <div class="row"><span class="t">产品岗模拟 · 07-10 · 65分</span><span class="rcol"><button class="btn-mini plain" data-go="interview-report">复盘</button></span></div>
+                </div>
+                <button class="btn btn-link-full" data-go="interview-weekly">查看每周报告 ›</button>
+              </div>
+              <div id="rv-radar" class="seg-pane">
+                <h2 class="sec">能力雷达</h2>
+                <div class="chart-box"><div id="radar-review"></div></div>
+                <p class="sub" style="margin-top:10px;">最近一次产品岗模拟 · 5 维能力分布</p>
+              </div>
+              <div id="rv-weekly" class="seg-pane">
+                <h2 class="sec">每周报告</h2>
+                <div class="metric-3">
+                  <div class="m-card"><div class="m-n indigo">4</div><div class="m-l">场 模拟面试</div></div>
+                  <div class="m-card"><div class="m-n green">120</div><div class="m-l">题 刷题</div></div>
+                  <div class="m-card"><div class="m-n orange">3</div><div class="m-l">家 投递</div></div>
+                </div>
+                <button class="btn btn-link-full" data-go="interview-weekly">查看完整每周报告 ›</button>
+              </div>
+              <div id="rv-trend" class="seg-pane">
+                <h2 class="sec">能力进步趋势</h2>
+                <div class="chart-box"><div id="trend-review"></div></div>
+                <p class="sub" style="margin-top:10px;">近 7 次模拟面试综合得分</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─── 6 每周报告 ───────────────────────────────────────── -->
+          <section id="screen-interview-weekly" class="screen" data-od-id="screen-interview-weekly">
+            <div class="navhead">
+              <button class="back" data-go="interview-review" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">每周报告</span>
+            </div>
+            <p class="sub">本周复盘报告 07.24 - 07.31</p>
+            <div class="metric-3" style="margin-top:14px;">
+              <div class="m-card"><div class="m-n indigo">4</div><div class="m-l">场 模拟面试</div></div>
+              <div class="m-card"><div class="m-n green">120</div><div class="m-l">题 刷题</div></div>
+              <div class="m-card"><div class="m-n orange">3</div><div class="m-l">家 投递</div></div>
+            </div>
+            <h2 class="sec">能力趋势</h2>
+            <div class="chart-box"><div id="trend-weekly"></div></div>
+            <h2 class="sec">下周改进计划</h2>
+            <div class="plan" data-od-id="weekly-plan">
+              <div class="plan-item"><span class="ck">✓</span>针对性补强系统设计类问题</div>
+              <div class="plan-item"><span class="ck">✓</span>完成 2 套字节产品岗模拟卷</div>
+              <div class="plan-item"><span class="ck">✓</span>复盘上周 3 次面试的薄弱点</div>
+            </div>
+          </section>
+
+          <!-- ─── 7 刷题主页 ───────────────────────────────────────── -->
+          <section id="screen-practice" class="screen" data-od-id="screen-practice">
+            <h1 class="page">智能刷题</h1>
+            <div class="chips" id="practice-chips" data-od-id="practice-filter">
+              <button class="chip on" data-cat="all">全部</button>
+              <button class="chip" data-cat="tech">技术</button>
+              <button class="chip" data-cat="prod">产品</button>
+              <button class="chip" data-cat="beh">行为</button>
+            </div>
+            <h2 class="sec">题库 <span style="display:flex;gap:10px;"><button class="link-inline" data-go="practice-bank" data-od-id="bank-entry">岗位题库 ›</button><button class="link-inline" data-go="practice-paper" data-od-id="smart-paper-entry">智能组卷 ›</button></span></h2>
+            <div id="q-list">
+              <button class="q-row" data-cat="prod" data-go="practice-answer"><span class="t">产品经理如何做需求优先级排序？</span><span class="tag">产品 · 高频</span></button>
+              <button class="q-row" data-cat="tech" data-go="practice-answer"><span class="t">手撕快排并分析时间复杂度</span><span class="tag">技术 · 高频</span></button>
+              <button class="q-row" data-cat="beh" data-go="practice-answer"><span class="t">讲一个你解决冲突的例子</span><span class="tag">行为 · 高频</span></button>
+              <button class="q-row" data-cat="prod" data-go="practice-answer"><span class="t">如何衡量一次功能上线的效果？</span><span class="tag">产品 · 中频</span></button>
+              <button class="q-row" data-cat="tech" data-go="practice-answer"><span class="t">HTTP 与 HTTPS 有什么区别？</span><span class="tag">技术 · 中频</span></button>
+              <button class="q-row" data-cat="beh" data-go="practice-answer"><span class="t">你的职业规划是什么？</span><span class="tag">行为 · 低频</span></button>
+            </div>
+            <button class="wrong-card" data-go="practice-wrong" data-od-id="wrong-book-entry"><span class="bk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5Z"/><path d="M20 8v12H6.5A2.5 2.5 0 0 0 4 21.5V19.5"/></svg></span><b>错题本</b><span class="cnt">待复习 18 题 ›</span></button>
+          </section>
+
+          <!-- ─── 8 岗位题库 ───────────────────────────────────────── -->
+          <section id="screen-practice-bank" class="screen" data-od-id="screen-practice-bank">
+            <div class="navhead">
+              <button class="back" data-go="practice" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">岗位题库</span>
+            </div>
+            <div class="filter-row" data-od-id="bank-filter">
+              <button class="fchip on">行业</button>
+              <button class="fchip">公司</button>
+              <button class="fchip">岗位</button>
+              <button class="fchip">难度</button>
+            </div>
+            <h2 class="sec">分类</h2>
+            <div class="cat-grid">
+              <button class="cat" data-go="practice-answer">产品经理</button>
+              <button class="cat" data-go="practice-answer">产品运营</button>
+              <button class="cat" data-go="practice-answer">数据分析</button>
+              <button class="cat" data-go="practice-answer">行测</button>
+            </div>
+            <h2 class="sec">推荐题库</h2>
+            <button class="q-row" data-go="practice-answer"><span class="t">B 端产品如何做用户调研？</span><span class="tag">产品 · 高频</span></button>
+            <button class="q-row" data-go="practice-answer"><span class="t">SQL 窗口函数怎么用？</span><span class="tag">数据 · 中频</span></button>
+          </section>
+
+          <!-- ─── 9 答题 ───────────────────────────────────────────── -->
+          <section id="screen-practice-answer" class="screen" data-od-id="screen-practice-answer">
+            <div class="navhead">
+              <button class="back" data-go="practice" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">答题</span>
+            </div>
+            <p class="q-progress">第 <b id="ans-prog">5</b> / 20 题</p>
+            <p class="q-stem" id="ans-stem" data-od-id="question-stem"></p>
+            <div class="opts" id="ans-opts" style="margin-top:18px;"></div>
+            <button class="btn btn-primary btn-block" id="ans-next" data-od-id="next-question">下一题</button>
+          </section>
+
+          <!-- ─── 10 答题结果 ──────────────────────────────────────── -->
+          <section id="screen-practice-result" class="screen" data-od-id="screen-practice-result">
+            <div class="navhead">
+              <button class="back" data-go="practice" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">答题结果</span>
+            </div>
+            <div class="result-hero" data-od-id="result-score">
+              <div class="r-score">75 分</div>
+              <div class="r-rate">正确率 75%</div>
+              <div class="r-stats">
+                <span class="it"><span class="dot ok"></span>正确 15</span>
+                <span class="it"><span class="dot bad"></span>错误 5</span>
+              </div>
+            </div>
+            <h2 class="sec">错题回顾</h2>
+            <div class="list">
+              <div class="row"><span class="t">手撕快排复杂度分析</span><span class="rcol"><span class="tag red">技术 · 算法</span></span></div>
+              <div class="row"><span class="t">系统设计取舍说明</span><span class="rcol"><span class="tag red">产品 · 系统</span></span></div>
+            </div>
+            <button class="btn btn-primary btn-block" data-go="practice-wrong" data-od-id="review-wrong-btn">加入错题本并复习</button>
+          </section>
+
+          <!-- ─── 11 错题本 ────────────────────────────────────────── -->
+          <section id="screen-practice-wrong" class="screen" data-od-id="screen-practice-wrong">
+            <div class="navhead">
+              <button class="back" data-go="practice" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">错题本</span>
+              <span class="right orange">18 题</span>
+            </div>
+            <div class="wrong-group" data-od-id="wrong-group">
+              <h4>产品方法论 <span>8 道</span></h4>
+              <div class="list">
+                <div class="row"><span class="t">需求优先级排序的取舍标准</span><span class="rcol"><span class="chev">›</span></span></div>
+                <div class="row"><span class="t">MVP 与完整功能如何平衡</span><span class="rcol"><span class="chev">›</span></span></div>
+              </div>
+            </div>
+            <div class="wrong-group">
+              <h4>数据分析 <span>5 道</span></h4>
+              <div class="list">
+                <div class="row"><span class="t">指标体系如何搭建</span><span class="rcol"><span class="chev">›</span></span></div>
+              </div>
+            </div>
+            <div class="wrong-group">
+              <h4>算法基础 <span>3 道</span></h4>
+              <div class="list">
+                <div class="row"><span class="t">手撕快排复杂度分析</span><span class="rcol"><span class="chev">›</span></span></div>
+              </div>
+            </div>
+            <div class="wrong-group">
+              <h4>行为面试 <span>2 道</span></h4>
+              <div class="list">
+                <div class="row"><span class="t">解决冲突的案例描述</span><span class="rcol"><span class="chev">›</span></span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─── 12 智能组卷 ──────────────────────────────────────── -->
+          <section id="screen-practice-paper" class="screen" data-od-id="screen-practice-paper">
+            <div class="navhead">
+              <button class="back" data-go="practice" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">智能组卷</span>
+            </div>
+            <h2 class="sec">选择岗位</h2>
+            <div class="chips" id="paper-post">
+              <button class="chip on">产品经理</button>
+              <button class="chip">产品运营</button>
+              <button class="chip">数据分析</button>
+            </div>
+            <h2 class="sec">难度</h2>
+            <div class="chips" id="paper-diff">
+              <button class="chip">简单</button>
+              <button class="chip on">中等</button>
+              <button class="chip">困难</button>
+            </div>
+            <h2 class="sec">试卷预览</h2>
+            <div class="paper-list" data-od-id="paper-preview">
+              <div class="paper-row"><span>选择题</span><span class="rcol"><span class="cnt">×10</span></span></div>
+              <div class="paper-row"><span>简答题</span><span class="rcol"><span class="cnt">×4</span></span></div>
+              <div class="paper-row"><span>案例分析</span><span class="rcol"><span class="cnt">×1</span></span></div>
+              <div class="paper-row timer"><span>限时 60 分钟 · 自动判分</span><span class="rcol"><span class="cnt">✓</span></span></div>
+            </div>
+            <button class="btn btn-primary btn-block" data-go="practice-answer" data-od-id="start-paper">开始答题</button>
+          </section>
+
+          <!-- ─── 13 投递主页 ──────────────────────────────────────── -->
+          <section id="screen-apply" class="screen" data-od-id="screen-apply">
+            <h1 class="page">投递追踪</h1>
+            <div class="stat-strip" data-od-id="apply-stats">
+              <div class="s-cell"><span class="n n-gray">9</span><span class="l">已投递</span></div>
+              <div class="s-cell"><span class="n n-orange">3</span><span class="l">面试中</span></div>
+              <div class="s-cell"><span class="n n-green">2</span><span class="l">Offer</span></div>
+              <div class="s-cell"><span class="n n-red">4</span><span class="l">未通过</span></div>
+            </div>
+            <div class="chips" id="apply-chips" style="margin-top:16px;" data-od-id="apply-filter">
+              <button class="chip on" data-cat="all">全部</button>
+              <button class="chip" data-cat="interviewing">面试中</button>
+              <button class="chip" data-cat="offer">Offer</button>
+            </div>
+            <h2 class="sec">投递列表 <button class="link-inline" data-go="apply-offer" data-od-id="offer-compare-entry">Offer 对比 ›</button></h2>
+            <div id="apply-list">
+              <button class="app-card" data-status="interviewing" data-go="apply-detail">
+                <span class="top"><b>AI 产品经理 · 字节跳动</b><span class="pill-tag orange">面试中</span></span>
+                <span class="meta">北京 · 25-40K · 07-20 投递</span>
+              </button>
+              <button class="app-card" data-status="offer" data-go="apply-detail">
+                <span class="top"><b>产品运营 · 美团</b><span class="pill-tag green">Offer</span></span>
+                <span class="meta">上海 · 20-35K · 06-28 投递</span>
+              </button>
+              <button class="app-card" data-status="interviewing" data-go="apply-detail">
+                <span class="top"><b>算法产品经理 · 腾讯</b><span class="pill-tag orange">面试中</span></span>
+                <span class="meta">深圳 · 30-50K · 07-12 投递</span>
+              </button>
+              <button class="app-card" data-status="reject" data-go="apply-detail">
+                <span class="top"><b>商业分析 · 京东</b><span class="pill-tag red">未通过</span></span>
+                <span class="meta">北京 · 25-35K · 06-20 投递</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- ─── 14 职位详情 ──────────────────────────────────────── -->
+          <section id="screen-apply-detail" class="screen" data-od-id="screen-apply-detail">
+            <div class="navhead">
+              <button class="back" data-go="apply" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">职位详情</span>
+            </div>
+            <div class="job-head" data-od-id="job-head">
+              <h2>AI 产品经理</h2>
+              <p class="co">字节跳动 · 北京</p>
+              <p class="salary">25-40K · 16薪</p>
+            </div>
+            <h2 class="sec">职位描述</h2>
+            <div class="bullets">
+              <ul>
+                <li>负责 AI 产品功能设计与落地</li>
+                <li>对接算法与研发团队</li>
+                <li>数据分析驱动迭代优化</li>
+                <li>3 年以上相关经验</li>
+              </ul>
+            </div>
+            <div class="match-row" data-od-id="match-rate">综合匹配度 <b>82%</b></div>
+            <h2 class="sec">相似职位</h2>
+            <button class="job-card" data-go="apply-detail">
+              <span class="co">AI 产品经理 · 腾讯</span>
+              <span class="loc">深圳 · 30-50K · 16薪</span>
+              <span class="tags"><span class="tag">AI · 高频</span></span>
+              <span class="chev">›</span>
+            </button>
+            <button class="job-card" data-go="apply-detail">
+              <span class="co">AI 产品专家 · 阿里巴巴</span>
+              <span class="loc">杭州 · 35-60K · 16薪</span>
+              <span class="tags"><span class="tag">AI · 高频</span></span>
+              <span class="chev">›</span>
+            </button>
+            <button class="btn btn-primary btn-block" data-go="apply-timeline" data-od-id="apply-now">立即投递</button>
+          </section>
+
+          <!-- ─── 15 投递进度 ──────────────────────────────────────── -->
+          <section id="screen-apply-timeline" class="screen" data-od-id="screen-apply-timeline">
+            <div class="navhead">
+              <button class="back" data-go="apply-detail" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">投递进度</span>
+              <span class="right orange">面试中</span>
+            </div>
+            <div class="timeline" data-od-id="timeline">
+              <div class="tl-node">
+                <span class="dot done">✓</span>
+                <div><span class="b">已投递</span><span class="m">07-20</span></div>
+                <button class="tl-link" data-go="apply-detail">点击查看详情 ›</button>
+              </div>
+              <div class="tl-node">
+                <span class="dot done">✓</span>
+                <div><span class="b">笔试通过</span><span class="m">07-22</span></div>
+                <span class="tl-sub">点击查看详情 ›</span>
+              </div>
+              <div class="tl-node">
+                <span class="dot doing">✓</span>
+                <div><span class="b">一面进行</span><span class="m">07-28</span><span class="pill-tag orange" style="margin-left:8px;display:inline-block;">进行中</span></div>
+                <span class="tl-sub">点击查看详情 ›</span>
+              </div>
+              <div class="tl-node">
+                <span class="dot todo"></span>
+                <div><span class="b">Offer 待定</span><span class="m">未达成</span></div>
+                <span class="tl-sub">点击查看详情 ›</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─── 16 Offer 对比 ────────────────────────────────────── -->
+          <section id="screen-apply-offer" class="screen" data-od-id="screen-apply-offer">
+            <div class="navhead">
+              <button class="back" data-go="apply" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">Offer 对比</span>
+            </div>
+            <div class="offer-cols" data-od-id="offer-compare">
+              <div class="o-card on">
+                <b>字节跳动</b>
+                <div class="o-rows">
+                  <div class="o-row"><span class="k">薪资</span><span class="v">32K</span></div>
+                  <div class="o-row"><span class="k">地点</span><span class="v">北京</span></div>
+                  <div class="o-row"><span class="k">职级</span><span class="v">2-1</span></div>
+                  <div class="o-row"><span class="k">股票</span><span class="v">有</span></div>
+                </div>
+              </div>
+              <div class="o-card off">
+                <b>腾讯</b>
+                <div class="o-rows">
+                  <div class="o-row"><span class="k">薪资</span><span class="v">26K</span></div>
+                  <div class="o-row"><span class="k">地点</span><span class="v">深圳</span></div>
+                  <div class="o-row"><span class="k">职级</span><span class="v">T9</span></div>
+                  <div class="o-row"><span class="k">股票</span><span class="v">无</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="advice" data-od-id="salary-advice">
+              <h4>谈薪建议</h4>
+              <p>字节总包高约 18%，可侧重谈股票归属节奏与落户支持。</p>
+            </div>
+            <button class="btn btn-primary btn-block" id="offer-script" data-od-id="gen-script">生成谈薪话术</button>
+          </section>
+
+          <!-- ─── 17 我的 ──────────────────────────────────────────── -->
+          <section id="screen-mine" class="screen" data-od-id="screen-mine">
+            <h1 class="page">我的</h1>
+            <div class="user-row" data-od-id="user-info">
+              <div class="avatar">杨</div>
+              <div>
+                <p class="name">杨俊宇</p>
+                <p class="sub">AI 产品经理 · 求职中</p>
+              </div>
+            </div>
+            <button class="card-row" data-go="mine-profile" style="margin-top:16px;" data-od-id="profile-entry">
+              <span style="flex:1;">求职档案完整度 <b class="accent-v">70%</b></span>
+              <span class="chev">›</span>
+            </button>
+            <div class="card-row" style="margin-top:12px;flex-wrap:wrap;cursor:default;">
+              <span style="width:100%;display:flex;justify-content:space-between;">求职档案完整度 <b class="accent-v">70%</b></span>
+              <span class="prog"><span class="bar" style="width:70%"></span></span>
+            </div>
+            <div class="member-card" data-od-id="member-card">
+              <h3>尊享会员</h3>
+              <p>解锁全部模拟面试 / 真题 / 报告</p>
+              <button class="btn-ad" data-toast="正在加载广告…" data-od-id="ad-cta">看广告领 1 天标准会员体验</button>
+              <button class="btn-ad" data-go="mine-member" data-od-id="member-center-entry">会员中心 ›</button>
+            </div>
+            <h2 class="sec">订单</h2>
+            <button class="card-row" data-go="mine-order" data-od-id="order-entry"><span style="flex:1;">我的订单</span><span class="chev">›</span></button>
+            <h2 class="sec">设置</h2>
+            <div class="list">
+              <button class="row" data-go="mine-edit"><span class="t">求职偏好设置</span><span class="chev">›</span></button>
+              <button class="row" data-go="mine-profile"><span class="t">记忆互通管理</span><span class="chev">›</span></button>
+              <button class="row" data-go="mine-settings"><span class="t">通知中心</span><span class="chev">›</span></button>
+              <button class="row" data-go="mine-settings"><span class="t">帮助与反馈</span><span class="chev">›</span></button>
+            </div>
+          </section>
+
+          <!-- ─── 18 求职档案 ──────────────────────────────────────── -->
+          <section id="screen-mine-profile" class="screen" data-od-id="screen-mine-profile">
+            <div class="navhead">
+              <button class="back" data-go="mine" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">求职档案</span>
+            </div>
+            <div class="user-row">
+              <div class="avatar">杨</div>
+              <div>
+                <p class="name">杨俊宇</p>
+                <p class="sub">吉首大学 · 计算机科学</p>
+              </div>
+            </div>
+            <h2 class="sec">求职目标</h2>
+            <div class="goal-card" data-od-id="goal-card">
+              <div class="kv"><span class="k">目标岗位</span><span class="v">AI 产品经理</span></div>
+              <div class="kv"><span class="k">期望薪资</span><span class="v">20-30K · 北京 深圳</span></div>
+            </div>
+            <h2 class="sec">数据互通</h2>
+            <div class="dgrid" data-od-id="profile-stats">
+              <div class="dcell"><span class="n" style="color:var(--accent)">12</span><span class="l">模拟</span></div>
+              <div class="dcell"><span class="n" style="color:var(--success)">238</span><span class="l">刷题</span></div>
+              <div class="dcell"><span class="n" style="color:var(--warn)">9</span><span class="l">投递</span></div>
+              <div class="dcell"><span class="n" style="color:var(--danger)">2</span><span class="l">Offer</span></div>
+            </div>
+            <div class="sync-row" style="margin-top:14px;"><span class="ck">✓</span>全模块记忆互通已开启</div>
+            <button class="btn btn-primary btn-block" data-go="mine-edit" data-od-id="edit-profile-btn">编辑档案</button>
+          </section>
+
+          <!-- ─── 19 编辑档案 ──────────────────────────────────────── -->
+          <section id="screen-mine-edit" class="screen" data-od-id="screen-mine-edit">
+            <div class="navhead">
+              <button class="back" data-go="mine-profile" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">编辑档案</span>
+            </div>
+            <div style="margin-top:14px;">
+              <div class="field"><label>姓名</label><input value="杨俊宇" /></div>
+              <div class="field"><label>学校</label><input value="吉首大学张家界学院" /></div>
+              <div class="field"><label>专业</label><input value="计算机科学与技术" /></div>
+              <div class="field"><label>目标岗位</label><input value="AI 产品经理" /></div>
+              <div class="field"><label>期望薪资</label><input value="20-30K" /></div>
+              <div class="field"><label>联系电话</label><input value="138****8888" /></div>
+            </div>
+            <button class="btn btn-primary btn-block" id="save-profile" data-od-id="save-profile">保存</button>
+          </section>
+
+          <!-- ─── 20 会员中心 ──────────────────────────────────────── -->
+          <section id="screen-mine-member" class="screen" data-od-id="screen-mine-member">
+            <div class="navhead">
+              <button class="back" data-go="mine" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">会员中心</span>
+            </div>
+            <div class="member-card">
+              <h3>尊享会员</h3>
+              <p>解锁全部模拟面试 / 真题 / 报告</p>
+              <button class="btn-ad" data-toast="正在加载广告…">看广告领 1 天标准会员体验</button>
+            </div>
+            <h2 class="sec">选择档位</h2>
+            <div class="tiers" data-od-id="member-tiers">
+              <div class="tier">
+                <h5>免费</h5>
+                <ul><li>基础刷题</li><li>限量模拟</li></ul>
+              </div>
+              <div class="tier on">
+                <h5>标准</h5>
+                <ul><li>无限模拟</li><li>错题本</li><li>周报</li></ul>
+              </div>
+              <div class="tier gold">
+                <h5>尊享</h5>
+                <ul><li>全部功能</li><li>1v1 报告</li><li>优先客服</li></ul>
+              </div>
+            </div>
+            <h2 class="sec">会员权益</h2>
+            <div class="benefit-list" data-od-id="benefits">
+              <div class="benefit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>AI 无限次模拟面试</div>
+              <div class="benefit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5Z"/><path d="M20 8v12H6.5A2.5 2.5 0 0 0 4 21.5V19.5"/></svg></span>笔试题库全解锁</div>
+              <div class="benefit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg></span>自动复盘报告导出</div>
+              <div class="benefit"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></span>1v1 定制改进建议</div>
+            </div>
+            <button class="btn btn-primary btn-block" data-go="mine-order" data-od-id="open-vip">开通尊享会员 ¥29/月</button>
+          </section>
+
+          <!-- ─── 21 我的订单 ──────────────────────────────────────── -->
+          <section id="screen-mine-order" class="screen" data-od-id="screen-mine-order">
+            <div class="navhead">
+              <button class="back" data-go="mine" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">我的订单</span>
+            </div>
+            <div class="list" style="margin-top:16px;" data-od-id="order-list">
+              <div class="row">
+                <span class="two-line"><span class="t" style="display:block;">尊享会员·月卡</span><span class="d">¥29 · 2026-07-20</span></span>
+                <span class="rcol"><span class="pill-tag green">已支付</span></span>
+              </div>
+              <div class="row">
+                <span class="two-line"><span class="t" style="display:block;">产品经理真题包</span><span class="d">¥49 · 2026-07-15</span></span>
+                <span class="rcol"><span class="pill-tag green">已支付</span></span>
+              </div>
+              <div class="row">
+                <span class="two-line"><span class="t" style="display:block;">模拟面试加量包</span><span class="d">¥19 · 2026-07-10</span></span>
+                <span class="rcol"><span class="pill-tag gray">已退款</span></span>
+              </div>
+              <div class="row">
+                <span class="two-line"><span class="t" style="display:block;">行业报告·互联网</span><span class="d">¥9 · 2026-07-05</span></span>
+                <span class="rcol"><span class="pill-tag green">已支付</span></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ─── 22 设置 ──────────────────────────────────────────── -->
+          <section id="screen-mine-settings" class="screen" data-od-id="screen-mine-settings">
+            <div class="navhead">
+              <button class="back" data-go="mine" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">设置</span>
+            </div>
+            <div class="list" style="margin-top:16px;" data-od-id="settings-list">
+              <button class="row">
+                <span class="two-line"><span class="t" style="display:block;">推送通知</span><span class="d">面试提醒 · 每周报告</span></span>
+                <span class="chev">›</span>
+              </button>
+              <button class="row">
+                <span class="two-line"><span class="t" style="display:block;">隐私设置</span><span class="d">数据脱敏与授权</span></span>
+                <span class="chev">›</span>
+              </button>
+              <button class="row">
+                <span class="two-line"><span class="t" style="display:block;">记忆互通</span><span class="d">跨模块数据共享</span></span>
+                <span class="chev">›</span>
+              </button>
+              <button class="row">
+                <span class="two-line"><span class="t" style="display:block;">关于我们</span><span class="d">版本 · 联系方式</span></span>
+                <span class="chev">›</span>
+              </button>
+              <button class="row">
+                <span class="two-line"><span class="t" style="display:block;">帮助与反馈</span><span class="d">问题反馈入口</span></span>
+                <span class="chev">›</span>
+              </button>
+              <button class="row quit-row" data-toast="已退出登录（原型演示）">退出登录</button>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="tabbar" data-od-id="tabbar">
+          <button class="tab active" data-tab="home" data-od-id="tab-home">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.6 12 3l9 7.6M5.5 9.2V21h4.6v-5.4h3.8V21h4.6V9.2"/></svg>
+            <span>首页</span>
+          </button>
+          <button class="tab" data-tab="interview" data-od-id="tab-interview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></svg>
+            <span>面试</span>
+          </button>
+          <button class="tab" data-tab="practice" data-od-id="tab-practice">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 5 5M16.5 2.5a2.1 2.1 0 0 1 3 3L7 18l-4 1 1-4Z"/></svg>
+            <span>刷题</span>
+          </button>
+          <button class="tab" data-tab="apply" data-od-id="tab-apply">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2.5 10.8 13.2M21.5 2.5l-6.5 19-3.7-8.5-8.5-3.7Z"/></svg>
+            <span>投递</span>
+          </button>
+          <button class="tab" data-tab="mine" data-od-id="tab-mine">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>
+            <span>我的</span>
+          </button>
+        </div>
+        <div class="home-indicator"></div>
+
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  var MOD = {
+    home: 'home', interview: 'interview', 'interview-live': 'interview',
+    'interview-report': 'interview', 'interview-review': 'interview',
+    'interview-weekly': 'interview', practice: 'practice',
+    'practice-bank': 'practice', 'practice-answer': 'practice',
+    'practice-result': 'practice', 'practice-wrong': 'practice',
+    'practice-paper': 'practice', apply: 'apply', 'apply-detail': 'apply',
+    'apply-timeline': 'apply', 'apply-offer': 'apply', mine: 'mine',
+    'mine-profile': 'mine', 'mine-edit': 'mine', 'mine-member': 'mine',
+    'mine-order': 'mine', 'mine-settings': 'mine'
+  };
+
+  var toastTimer = null;
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 1600);
+  }
+
+  function closePalette() {
+    document.getElementById('palette').classList.remove('open');
+  }
+
+  function go(id) {
+    var scr = document.getElementById('screen-' + id);
+    if (!scr) return;
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+    scr.classList.add('active');
+    scr.scrollTop = 0;
+    var mod = MOD[id] || id;
+    var tabs = document.querySelectorAll('.tab');
+    for (var j = 0; j < tabs.length; j++) tabs[j].classList.toggle('active', tabs[j].dataset.tab === mod);
+    closePalette();
+    if (id === 'interview-live') startLive();
+  }
+
+  window.go = go;
+
+  /* ── 屏幕导航面板 ─────────────────────────────────────────────── */
+  var PAL = [
+    ['首页', [['home', '首页']]],
+    ['面试', [['interview', '面试主页'], ['interview-live', '模拟面试 · 进行中'], ['interview-report', '面试报告'], ['interview-review', '复盘追踪'], ['interview-weekly', '每周报告']]],
+    ['刷题', [['practice', '刷题主页'], ['practice-bank', '岗位题库'], ['practice-answer', '答题'], ['practice-result', '答题结果'], ['practice-wrong', '错题本'], ['practice-paper', '智能组卷']]],
+    ['投递', [['apply', '投递主页'], ['apply-detail', '职位详情'], ['apply-timeline', '投递进度'], ['apply-offer', 'Offer 对比']]],
+    ['我的', [['mine', '我的'], ['mine-profile', '求职档案'], ['mine-edit', '编辑档案'], ['mine-member', '会员中心'], ['mine-order', '我的订单'], ['mine-settings', '设置']]]
+  ];
+  var palBox = document.getElementById('palette');
+  var palHTML = '';
+  for (var gi = 0; gi < PAL.length; gi++) {
+    palHTML += '<div class="pal-group"><div class="pal-head">' + PAL[gi][0] + '</div><div class="pal-chips">';
+    for (var cj = 0; cj < PAL[gi][1].length; cj++) {
+      palHTML += '<button class="pal-chip" data-palgo="' + PAL[gi][1][cj][0] + '">' + PAL[gi][1][cj][1] + '</button>';
+    }
+    palHTML += '</div></div>';
+  }
+  palBox.innerHTML = palHTML;
+
+  /* ── 全局事件委托 ─────────────────────────────────────────────── */
+  document.addEventListener('click', function (e) {
+    var palBtn = e.target.closest('#palette-toggle');
+    if (palBtn) { document.getElementById('palette').classList.toggle('open'); return; }
+    var palGo = e.target.closest('[data-palgo]');
+    if (palGo) { go(palGo.dataset.palgo); return; }
+
+    var goEl = e.target.closest('[data-go]');
+    if (goEl) {
+      if (goEl.dataset.liveDir) document.getElementById('live-dir').textContent = goEl.dataset.liveDir;
+      go(goEl.dataset.go);
+      return;
+    }
+    var tabEl = e.target.closest('.tab');
+    if (tabEl) { go(tabEl.dataset.tab); return; }
+    var segEl = e.target.closest('[data-seg]');
+    if (segEl) { setSeg(segEl.dataset.seg); return; }
+    var chipEl = e.target.closest('[data-cat]');
+    if (chipEl) { filterChips(chipEl); return; }
+    var optEl = e.target.closest('.opt');
+    if (optEl) { selectOpt(optEl); return; }
+    var fchipEl = e.target.closest('.fchip');
+    if (fchipEl) {
+      var fw = fchipEl.parentElement.querySelectorAll('.fchip');
+      for (var f = 0; f < fw.length; f++) fw[f].classList.remove('on');
+      fchipEl.classList.add('on');
+      return;
+    }
+    var toastEl = e.target.closest('[data-toast]');
+    if (toastEl) { toast(toastEl.dataset.toast); return; }
+  });
+
+  /* ── 复盘追踪分段控件 ─────────────────────────────────────────── */
+  window.setSeg = function (k) {
+    var items = document.querySelectorAll('.seg-item');
+    for (var i = 0; i < items.length; i++) items[i].classList.toggle('on', items[i].dataset.seg === k);
+    var panes = document.querySelectorAll('.seg-pane');
+    for (var j = 0; j < panes.length; j++) panes[j].classList.toggle('on', panes[j].id === 'rv-' + k);
+  };
+
+  /* ── 列表筛选（刷题 / 投递） ───────────────────────────────────── */
+  window.filterChips = function (active) {
+    var wrap = active.parentElement;
+    var chips = wrap.querySelectorAll('.chip');
+    for (var i = 0; i < chips.length; i++) chips[i].classList.remove('on');
+    active.classList.add('on');
+    var cat = active.dataset.cat;
+    if (wrap.id === 'practice-chips') {
+      var qs = document.querySelectorAll('#q-list .q-row');
+      for (var q = 0; q < qs.length; q++) qs[q].style.display = (cat === 'all' || qs[q].dataset.cat === cat) ? '' : 'none';
+    } else if (wrap.id === 'apply-chips') {
+      var acs = document.querySelectorAll('#apply-list .app-card');
+      for (var a = 0; a < acs.length; a++) acs[a].style.display = (cat === 'all' || acs[a].dataset.status === cat) ? '' : 'none';
+    }
+  };
+
+  /* ── 模拟面试：计时器 + 对话 ───────────────────────────────────── */
+  var liveT = 0, liveTimer = null, liveStarted = false, liveQ = 3, replyIdx = 0;
+  var AI_REPLIES = [
+    '说得不错。能再具体讲讲当时如何权衡取舍的吗？',
+    '好的。如果资源只剩一半，你会优先砍掉哪个模块？',
+    '了解了。数据指标方面，你当时是怎么定义的？',
+    '很好，那最后上线之后效果如何，如何验证的？'
+  ];
+  function startLive() {
+    if (liveStarted) return;
+    liveStarted = true;
+    liveTimer = setInterval(function () {
+      liveT++;
+      var m = String(Math.floor(liveT / 60)).padStart(2, '0');
+      var s = String(liveT % 60).padStart(2, '0');
+      document.getElementById('live-timer').textContent = m + ':' + s;
+    }, 1000);
+  }
+  function scrollChat() {
+    var scr = document.getElementById('screen-interview-live');
+    scr.scrollTop = scr.scrollHeight;
+  }
+  function sendAnswer() {
+    var inp = document.getElementById('live-input');
+    var v = inp.value.trim();
+    if (!v) return;
+    var chat = document.getElementById('live-chat');
+    var b = document.createElement('div');
+    b.className = 'bubble user';
+    b.textContent = v;
+    chat.appendChild(b);
+    inp.value = '';
+    liveQ = Math.min(8, liveQ + 1);
+    document.getElementById('live-q').textContent = liveQ;
+    setTimeout(function () {
+      var a = document.createElement('div');
+      a.className = 'bubble ai';
+      a.textContent = AI_REPLIES[replyIdx % AI_REPLIES.length];
+      replyIdx++;
+      chat.appendChild(a);
+      scrollChat();
+    }, 750);
+    scrollChat();
+  }
+  document.getElementById('live-send').addEventListener('click', sendAnswer);
+  document.getElementById('live-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') sendAnswer();
+  });
+
+  /* ── 答题交互 ─────────────────────────────────────────────────── */
+  var QUESTIONS = [
+    { stem: '在产品需求评审中，开发认为你的优先级不合理，你会怎么处理？请说明思路。', opts: ['直接按文档执行', '倾听并给出数据佐证', '妥协放弃', '上报领导'] },
+    { stem: '版本迭代节奏加快，资源只能覆盖一半需求，你如何排期？', opts: ['按需求方催得急的先做', '按价值与成本二维排序，先做高性价比', '平均分配避免得罪人', '全部延期'] },
+    { stem: '如何衡量一次功能上线是否成功？', opts: ['只看上线后无崩溃', '结合北极星指标与漏斗转化率', '听开发反馈', '等老板拍板'] },
+    { stem: '竞品上线了类似功能，且用户数据表现更好，你怎么办？', opts: ['直接照抄竞品', '分析差异与自身用户场景后迭代', '放弃该方向', '降低目标'] }
+  ];
+  var ansIdx = 0;
+  function renderQ() {
+    var q = QUESTIONS[ansIdx % QUESTIONS.length];
+    document.getElementById('ans-stem').textContent = q.stem;
+    var box = document.getElementById('ans-opts');
+    box.innerHTML = '';
+    for (var i = 0; i < q.opts.length; i++) {
+      var o = document.createElement('button');
+      o.className = 'opt';
+      o.innerHTML = '<span class="k">' + 'ABCD'[i] + '</span><span>' + q.opts[i] + '</span>';
+      (function (el) {
+        el.addEventListener('click', function () {
+          var all = box.querySelectorAll('.opt');
+          for (var x = 0; x < all.length; x++) all[x].classList.remove('sel');
+          el.classList.add('sel');
+        });
+      })(o);
+      box.appendChild(o);
+    }
+    document.getElementById('ans-prog').textContent = 5 + ansIdx;
+    var nxt = document.getElementById('ans-next');
+    nxt.textContent = (ansIdx >= QUESTIONS.length - 1) ? '提交答卷' : '下一题';
+  }
+  document.getElementById('ans-next').addEventListener('click', function () {
+    if (ansIdx >= QUESTIONS.length - 1) {
+      go('practice-result');
+      ansIdx = 0;
+      renderQ();
+    } else {
+      ansIdx++;
+      renderQ();
+    }
+  });
+  window.selectOpt = function () {};
+  renderQ();
+
+  /* ── 图表 ─────────────────────────────────────────────────────── */
+  function radarHTML(cx, cy, r, labels, values) {
+    var n = labels.length, i;
+    function pts(ri) {
+      var out = [];
+      for (i = 0; i < n; i++) {
+        var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+        out.push([(cx + r * ri * Math.cos(a)).toFixed(1), (cy + r * ri * Math.sin(a)).toFixed(1)]);
+      }
+      return out;
+    }
+    function polyStr(ri) {
+      return pts(ri).map(function (p) { return p.join(','); }).join(' ');
+    }
+    var svg = '<svg viewBox="0 0 260 240" role="img" aria-label="能力雷达图">';
+    [1, 0.66, 0.33].forEach(function (g) {
+      svg += '<polygon points="' + polyStr(g) + '" fill="none" style="stroke:var(--border)" stroke-width="1"/>';
+    });
+    var vp = pts(1);
+    for (i = 0; i < n; i++) {
+      svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + vp[i][0] + '" y2="' + vp[i][1] + '" style="stroke:var(--border)" stroke-width="1"/>';
+    }
+    var dp = pts(1);
+    var dataStr = dp.map(function (p) { return p.join(','); }).join(' ');
+    svg += '<polygon points="' + dataStr + '" style="fill:var(--accent);stroke:var(--accent)" fill-opacity="0.18" stroke-width="2" stroke-linejoin="round"/>';
+    var vals = pts(1);
+    for (i = 0; i < n; i++) {
+      var t = values[i] / 100;
+      var px = cx + r * t * Math.cos(-Math.PI / 2 + i * 2 * Math.PI / n);
+      var py = cy + r * t * Math.sin(-Math.PI / 2 + i * 2 * Math.PI / n);
+      svg += '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="3" fill="var(--white)" style="stroke:var(--accent)" stroke-width="2"/>';
+    }
+    for (i = 0; i < n; i++) {
+      var lx = cx + r * 1.22 * Math.cos(-Math.PI / 2 + i * 2 * Math.PI / n);
+      var ly = cy + r * 1.22 * Math.sin(-Math.PI / 2 + i * 2 * Math.PI / n);
+      var cos = Math.cos(-Math.PI / 2 + i * 2 * Math.PI / n);
+      var anc = cos < -0.25 ? 'end' : (cos > 0.25 ? 'start' : 'middle');
+      svg += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + anc + '" dominant-baseline="middle" style="fill:var(--muted)" font-size="10">' + labels[i] + '</text>';
+    }
+    svg += '</svg>';
+    return svg;
+  }
+  function mountRadar(id, labels, values) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = radarHTML(130, 122, 76, labels, values);
+  }
+  function mountLine(id, data) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var W = 280, H = 116, P = 10;
+    var min = Math.min.apply(null, data), max = Math.max.apply(null, data);
+    function x(i) { return P + i * (W - 2 * P) / (data.length - 1); }
+    function y(v) { return H - P - (v - min) / ((max - min) || 1) * (H - 2 * P); }
+    var path = '', area = '';
+    for (var i = 0; i < data.length; i++) {
+      path += (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(data[i]).toFixed(1);
+    }
+    area = path + ' L' + x(data.length - 1).toFixed(1) + ',' + (H - P) + ' L' + x(0).toFixed(1) + ',' + (H - P) + ' Z';
+    var dots = '';
+    for (var j = 0; j < data.length; j++) {
+      dots += '<circle cx="' + x(j).toFixed(1) + '" cy="' + y(data[j]).toFixed(1) + '" r="3" fill="var(--white)" style="stroke:var(--accent)" stroke-width="2"/>';
+    }
+    el.innerHTML = '<svg viewBox="0 0 280 116" role="img" aria-label="趋势图">' +
+      '<path d="' + area + '" style="fill:var(--accent)" fill-opacity="0.1"/>' +
+      '<path d="' + path + '" fill="none" style="stroke:var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>' +
+      dots + '</svg>';
+  }
+  function mountBars(id, data) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var W = 280, H = 110, P = 8;
+    var max = Math.max.apply(null, data);
+    var bw = (W - 2 * P) / data.length * 0.56;
+    var slot = (W - 2 * P) / data.length;
+    var bars = '';
+    for (var i = 0; i < data.length; i++) {
+      var h = (data[i] / max) * (H - 2 * P);
+      var x0 = P + i * slot + (slot - bw) / 2;
+      bars += '<rect x="' + x0.toFixed(1) + '" y="' + (H - P - h).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" rx="3" style="fill:var(--accent)" fill-opacity="' + (i === data.length - 1 ? '1' : '0.55') + '"/>';
+    }
+    el.innerHTML = '<svg viewBox="0 0 280 110" role="img" aria-label="柱状图">' + bars + '</svg>';
+  }
+  mountRadar('radar-main', ['沟通表达', '专业深度', '逻辑思维', '临场应变', '结构化'], [92, 86, 78, 81, 88]);
+  mountRadar('radar-review', ['沟通表达', '专业深度', '逻辑思维', '临场应变', '结构化'], [88, 80, 76, 82, 85]);
+  mountLine('trend-review', [62, 70, 68, 76, 80, 82, 86]);
+  mountLine('trend-weekly', [58, 64, 72, 68, 78, 84, 90]);
+  mountBars('trend-weekly-bar', [18, 24, 15, 30, 22, 28, 26]);
+
+  /* ── 保存档案 / 生成话术 ──────────────────────────────────────── */
+  document.getElementById('save-profile').addEventListener('click', function () {
+    toast('已保存');
+    setTimeout(function () { go('mine-profile'); }, 420);
+  });
+  document.getElementById('offer-script').addEventListener('click', function () {
+    toast('谈薪话术已生成');
+  });
+
+  /* ── 等比缩放适配预览窗口 ──────────────────────────────────────── */
+  var phone = document.getElementById('phone');
+  var wrap = document.getElementById('phone-wrap');
+  function fit() {
+    var s = Math.min(1, (window.innerHeight - 100) / 884, (window.innerWidth - 36) / 414);
+    s = Math.max(0.4, s);
+    phone.style.transform = 'scale(' + s + ')';
+    wrap.style.width = (390 * s) + 'px';
+    wrap.style.height = (844 * s) + 'px';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+})();
+</script>
+</body>
+</html>
