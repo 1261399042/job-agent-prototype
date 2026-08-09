@@ -521,7 +521,7 @@ h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; ma
 .stat-cell .n { display: block; font-family: var(--font-mono); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .stat-cell .n .u { font-size: 12px; font-weight: 600; color: var(--muted); margin-left: 2px; }
 .stat-cell .l { display: block; font-size: 13px; color: var(--muted); margin-top: 3px; }
-.quick-ctas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.quick-ctas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .btn-quick { padding: 12px 4px; font-size: 13px; border-radius: var(--radius-pill); }
 .job-card {
   position: relative; display: block; width: 100%; text-align: left;
@@ -829,6 +829,115 @@ h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; ma
 .benefit-list { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 4px 16px; }
 .quit-row { color: var(--danger); font-weight: 600; justify-content: center; }
 
+/* ─── 简历：上传 / 功能宫格 / 风险 / JD 匹配 / 多版本 ─────────────────── */
+.upload-zone {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; min-height: 148px; text-align: center;
+  border: 1.5px dashed var(--border); border-radius: var(--radius-lg);
+  background: var(--surface); padding: 28px 16px; margin-top: 16px;
+  transition: all var(--motion-fast) var(--ease);
+}
+.upload-zone:hover { border-color: var(--accent); background: var(--indigo-bg); }
+.upload-zone .cloud { width: 40px; height: 40px; color: var(--accent); }
+.upload-zone .cloud svg { width: 40px; height: 40px; }
+.upload-zone b { font-size: 15px; font-weight: 600; }
+.upload-zone p { font-size: 12px; color: var(--muted); }
+.fn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fn-cell {
+  position: relative; display: flex; flex-direction: column; gap: 9px;
+  width: 100%; text-align: left; background: var(--white);
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 15px; box-shadow: var(--shadow-card);
+  transition: all var(--motion-fast) var(--ease);
+}
+button.fn-cell:hover { border-color: var(--accent); }
+.fn-cell .ic { width: 32px; height: 32px; border-radius: 9px; background: var(--indigo-bg); color: var(--accent); display: grid; place-items: center; }
+.fn-cell .ic svg { width: 17px; height: 17px; }
+.fn-cell b { font-size: 14px; font-weight: 600; }
+.fn-cell .d { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.fn-cell .val { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.dot-badge { position: absolute; top: 14px; right: 14px; width: 9px; height: 9px; border-radius: 50%; background: var(--danger); }
+.resume-cur {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 15px 16px; box-shadow: var(--shadow-card); margin-top: 14px;
+  transition: all var(--motion-fast) var(--ease);
+}
+.resume-cur:hover { border-color: var(--accent); }
+.resume-cur .rc-info { flex: 1; min-width: 0; }
+.resume-cur .rc-info b { font-size: 15px; font-weight: 600; }
+.resume-cur .rc-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; font-size: 12px; color: var(--muted); }
+.resume-cur .rc-meta .mono { font-family: var(--font-mono); color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.resume-cur .rc-prog { flex: none; width: 88px; height: 6px; border-radius: 3px; background: var(--surface); overflow: hidden; }
+.resume-cur .rc-prog .bar { height: 100%; width: 85%; background: var(--accent); border-radius: 3px; }
+.resume-cur .chev { color: var(--meta); font-size: 15px; }
+.risk-hero {
+  background: color-mix(in oklch, var(--danger) 7%, var(--white));
+  border: 1px solid color-mix(in oklch, var(--danger) 26%, transparent);
+  border-radius: var(--radius-lg); padding: 20px 18px; margin-top: 16px;
+}
+.risk-hero .rh-n { font-family: var(--font-mono); font-size: 30px; font-weight: 700; color: var(--danger); font-variant-numeric: tabular-nums; }
+.risk-hero .rh-n small { font-size: 13px; font-weight: 600; color: var(--fg-2); margin-left: 6px; font-family: var(--font-body); }
+.risk-hero .rh-s { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.risk-group { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 15px 16px; margin-bottom: 12px; box-shadow: var(--shadow-card); }
+.risk-group .rg-head { display: flex; align-items: center; gap: 8px; }
+.risk-group .rg-head b { font-size: 14px; font-weight: 600; }
+.r-tag { font-size: 11px; font-weight: 600; border-radius: var(--radius-sm); padding: 2px 8px; flex: none; }
+.r-tag.red { color: var(--danger); background: color-mix(in oklch, var(--danger) 10%, var(--white)); }
+.r-tag.orange { color: var(--gold-deep); background: var(--gold-bg); }
+.risk-group .rg-line { font-size: 12px; margin-top: 8px; line-height: 1.6; }
+.risk-group .rg-line .src { color: var(--fg); }
+.risk-group .rg-line .arrow { color: var(--meta); margin: 0 6px; }
+.risk-group .rg-line .fix { color: var(--success); }
+.match-card {
+  border: 1px solid color-mix(in oklch, var(--accent) 38%, transparent);
+  background: var(--indigo-bg); border-radius: var(--radius-lg);
+  padding: 16px; margin-top: 14px;
+}
+.match-card .mc-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.match-card .mc-top b { font-family: var(--font-mono); font-size: 24px; color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.match-card .mc-top .who { font-size: 12px; color: var(--fg-2); text-align: right; line-height: 1.5; }
+.match-card .mc-bar { height: 8px; background: rgba(255, 255, 255, 0.75); border-radius: 4px; overflow: hidden; margin-top: 12px; }
+.match-card .mc-bar .fill { height: 100%; width: 82%; background: var(--accent); border-radius: 4px; }
+.gap-list { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 4px 16px; margin-top: 14px; }
+.gap-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; font-size: 13px; }
+.gap-row + .gap-row { border-top: 1px solid var(--border-soft); }
+.gap-row .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); flex: none; }
+.gap-row b { font-weight: 600; width: 84px; flex: none; }
+.gap-row .d { color: var(--muted); flex: 1; }
+.sugg-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 4px 16px; margin-top: 14px; }
+.sugg-item { display: flex; align-items: flex-start; gap: 10px; padding: 13px 0; font-size: 13px; line-height: 1.55; }
+.sugg-item + .sugg-item { border-top: 1px solid var(--border-soft); }
+.sugg-item .ck-box {
+  flex: none; width: 20px; height: 20px; margin-top: 1px;
+  border: 1.5px solid var(--border); border-radius: 6px; background: var(--white);
+  display: grid; place-items: center; color: transparent; font-size: 12px; font-weight: 700;
+  transition: all var(--motion-fast) var(--ease);
+}
+.sugg-item .ck-box.on { background: var(--accent); border-color: var(--accent); color: var(--white); }
+.ver-list { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-top: 16px; }
+.ver-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
+  background: var(--white); border: 0; padding: 14px 16px; transition: background var(--motion-fast) var(--ease);
+}
+.ver-row + .ver-row { border-top: 1px solid var(--border-soft); }
+.ver-row:hover { background: var(--surface); }
+.ver-row .vi { flex: 1; min-width: 0; }
+.ver-row .vi b { font-size: 14px; font-weight: 600; }
+.ver-row .vi .m { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.ver-row .vi .m .mono { font-family: var(--font-mono); color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.ver-row .act { font-size: 12px; color: var(--accent); font-weight: 600; flex: none; }
+.cmp-box { margin-top: 14px; }
+.cmp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cmp-col { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.cmp-col .cc-head { background: var(--surface); font-size: 13px; font-weight: 600; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+.cmp-col .cc-row { font-size: 12px; padding: 11px 14px; line-height: 1.5; }
+.cmp-col .cc-row + .cc-row { border-top: 1px solid var(--border-soft); }
+.cmp-col .cc-row.hl { background: var(--indigo-bg); color: var(--accent); font-weight: 600; }
+.cmp-col .cc-row .k { display: block; color: var(--muted); font-size: 11px; margin-bottom: 2px; font-weight: 400; }
+.exp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; }
+.exp-row .btn { padding: 12px 8px; font-size: 14px; }
+
 /* ─── Toast ────────────────────────────────────────────────────────── */
 .toast {
   position: absolute; left: 50%; bottom: 104px; transform: translateX(-50%) translateY(8px);
@@ -848,7 +957,7 @@ h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; ma
 <body>
 <div class="stage">
   <header class="stagehead" data-od-id="stagehead">
-    <span class="brand">求职全流程 AI 智能体<small>22 屏 · iPhone 390×844</small></span>
+    <span class="brand">求职全流程 AI 智能体<small>27 屏 · iPhone 390×844</small></span>
     <span class="spacer"></span>
     <span class="hint">底部 Tab 切模块 · 屏幕内点按跳转 · 面试页计时器走秒</span>
     <button class="btn-palette" id="palette-toggle" data-od-id="screen-nav">屏幕导航 <span class="dots">▾</span></button>
@@ -885,6 +994,7 @@ h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; ma
             <div class="quick-ctas">
               <button class="btn btn-primary btn-quick" data-go="interview-live" data-od-id="quick-start-interview">开始模拟</button>
               <button class="btn btn-primary btn-quick" data-go="practice" data-od-id="quick-practice">智能刷题</button>
+              <button class="btn btn-primary btn-quick" data-go="resume" data-od-id="quick-resume">简历优化</button>
               <button class="btn btn-primary btn-quick" data-go="apply" data-od-id="quick-apply">一键投递</button>
             </div>
             <h2 class="sec">为你推荐</h2>
@@ -1497,6 +1607,179 @@ h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; ma
             </div>
           </section>
 
+          <!-- ─── 23 简历中心 ──────────────────────────────────────── -->
+          <section id="screen-resume" class="screen" data-od-id="screen-resume">
+            <div class="navhead">
+              <button class="back" data-go="home" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">简历中心</span>
+            </div>
+            <p class="sub" style="margin-top:2px;">你的求职档案与简历资产</p>
+            <button class="upload-zone" data-go="resume-upload" data-od-id="resume-upload-entry">
+              <span class="cloud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 .42-8.98 6 6 0 0 0-11.7 1.2A3.5 3.5 0 0 0 6.5 19Z"/><path d="M12 9v6m0 0 3-3m-3 3-3-3"/></svg></span>
+              <b>＋ 上传 / 新建简历</b>
+              <p>支持 PDF / Word · AI 自动解析为全局档案</p>
+            </button>
+            <h2 class="sec">简历工具</h2>
+            <div class="fn-grid" data-od-id="resume-tools">
+              <button class="fn-cell" data-go="resume-risk" data-od-id="resume-risk-entry">
+                <span class="dot-badge"></span>
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5v8l-9 5-9-5V8Z"/><path d="M12 9v4M12 16.5h.01"/></svg></span>
+                <b>简历风险检测</b>
+                <span class="d">扫描空泛词 / 夸大表述 / 格式风险</span>
+              </button>
+              <button class="fn-cell" data-go="resume-jd" data-od-id="resume-jd-entry">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.6" fill="currentColor"/></svg></span>
+                <b>JD 匹配优化</b>
+                <span class="d">粘贴 JD，自动比对差距并一键应用</span>
+              </button>
+              <button class="fn-cell" data-go="resume-versions" data-od-id="resume-versions-entry">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5A2.5 2.5 0 0 1 4 20.5Z"/></svg></span>
+                <b>多版本管理</b>
+                <span class="d">按岗位生成多版简历，对比与导出</span>
+              </button>
+              <div class="fn-cell" data-od-id="resume-completeness">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7a5 5 0 1 0 5 5"/><path d="M12 12 16 8"/></svg></span>
+                <b>简历完整度</b>
+                <span class="val">当前 85%</span>
+              </div>
+            </div>
+            <h2 class="sec">当前简历</h2>
+            <button class="resume-cur" data-go="resume-upload" data-od-id="current-resume">
+              <span class="rc-info">
+                <b>AI产品经理_标准版</b>
+                <span class="rc-meta"><span class="mono">85%</span><span>完整度</span><span>·</span><span>2026-07-30 更新</span></span>
+              </span>
+              <span class="rc-prog"><span class="bar"></span></span>
+              <span class="chev">编辑 ›</span>
+            </button>
+          </section>
+
+          <!-- ─── 24 简历上传解析 ──────────────────────────────────── -->
+          <section id="screen-resume-upload" class="screen" data-od-id="screen-resume-upload">
+            <div class="navhead">
+              <button class="back" data-go="resume" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">上传简历</span>
+            </div>
+            <button class="upload-zone" style="margin-top:18px;" data-toast="已选择 杨俊宇-简历.pdf（原型演示）" data-od-id="resume-upload-dropzone">
+              <span class="cloud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19a4.5 4.5 0 0 0 .42-8.98 6 6 0 0 0-11.7 1.2A3.5 3.5 0 0 0 6.5 19Z"/><path d="M12 9v6m0 0 3-3m-3 3-3-3"/></svg></span>
+              <b>拖拽或点击上传 PDF / Word</b>
+              <p>文件仅本地解析，可随时删除</p>
+            </button>
+            <h2 class="sec">解析预览 <span class="pill-tag green" style="font-weight:600;">解析完成</span></h2>
+            <div class="list" data-od-id="parse-preview">
+              <div class="row"><span class="two-line"><span class="t" style="display:block;">教育背景</span><span class="d">吉首大学 · 计算机</span></span><span class="rcol" style="color:var(--success);font-size:12px;font-weight:600;">✓ 已抽取</span></div>
+              <div class="row"><span class="two-line"><span class="t" style="display:block;">实习经历</span><span class="d">2 段实习</span></span><span class="rcol" style="color:var(--success);font-size:12px;font-weight:600;">✓ 已抽取</span></div>
+              <div class="row"><span class="two-line"><span class="t" style="display:block;">项目经历</span><span class="d">3 个项目</span></span><span class="rcol" style="color:var(--success);font-size:12px;font-weight:600;">✓ 已抽取</span></div>
+              <div class="row"><span class="two-line"><span class="t" style="display:block;">技能标签</span><span class="d">8 个技能标签</span></span><span class="rcol" style="color:var(--success);font-size:12px;font-weight:600;">✓ 已抽取</span></div>
+            </div>
+            <button class="btn btn-primary btn-block" data-go="resume" data-toast="已生成全局求职档案（原型演示）" data-od-id="resume-confirm">确认解析并生成档案</button>
+          </section>
+
+          <!-- ─── 25 简历风险检测 ──────────────────────────────────── -->
+          <section id="screen-resume-risk" class="screen" data-od-id="screen-resume-risk">
+            <div class="navhead">
+              <button class="back" data-go="resume" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">简历风险检测</span>
+            </div>
+            <div class="risk-hero" data-od-id="risk-score">
+              <div class="rh-n">72<span class="cap" style="color:var(--fg-2);font-size:14px;font-weight:600;"> 分</span><small>简历健康度</small></div>
+              <div class="rh-s">发现 6 处可优化点，优化后可显著提升筛选通过率</div>
+            </div>
+            <h2 class="sec">风险清单</h2>
+            <div class="risk-group" data-od-id="risk-wordy">
+              <div class="rg-head"><b>空泛词</b><span class="r-tag orange">建议优化</span></div>
+              <div class="rg-line"><span class="src">「负责相关工作」</span><span class="arrow">→</span><span class="fix">建议改为「主导 XX 项目，提升转化率 18%」</span></div>
+            </div>
+            <div class="risk-group" data-od-id="risk-exaggerate">
+              <div class="rg-head"><b>夸大表述</b><span class="r-tag red">高风险</span></div>
+              <div class="rg-line"><span class="src">「精通各类算法」</span><span class="arrow">→</span><span class="fix">建议量化为「熟练使用 X，落地 Y 场景」</span></div>
+            </div>
+            <div class="risk-group" data-od-id="risk-format">
+              <div class="rg-head"><b>格式风险</b><span class="r-tag orange">建议优化</span></div>
+              <div class="rg-line"><span class="src">行距不统一、日期格式混乱</span><span class="arrow">→</span><span class="fix">建议统一为「YYYY.MM」</span></div>
+            </div>
+            <div class="risk-group" data-od-id="risk-keyword">
+              <div class="rg-head"><b>关键词缺失</b><span class="r-tag red">高风险</span></div>
+              <div class="rg-line"><span class="src">未命中「数据驱动」</span><span class="arrow">→</span><span class="fix">建议补充 1 个数据案例</span></div>
+            </div>
+            <button class="btn btn-primary btn-block" data-go="resume-versions" data-toast="已生成优化版简历（原型演示）" data-od-id="resume-optimize">一键优化并生成新版本</button>
+          </section>
+
+          <!-- ─── 26 JD 匹配优化 ───────────────────────────────────── -->
+          <section id="screen-resume-jd" class="screen" data-od-id="screen-resume-jd">
+            <div class="navhead">
+              <button class="back" data-go="resume" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">JD 匹配优化</span>
+            </div>
+            <div class="field" style="margin-top:16px;">
+              <label>粘贴目标职位 JD</label>
+              <textarea rows="4" style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-md);background:var(--white);font-size:14px;color:var(--fg);resize:none;line-height:1.6;font-family:var(--font-body);" placeholder="粘贴目标职位 JD…">负责 AI 产品从 0 到 1 规划，具备数据驱动决策能力，能主导跨团队项目落地。</textarea>
+            </div>
+            <div class="match-card" data-od-id="jd-match">
+              <div class="mc-top">
+                <b>岗位匹配度 82%</b>
+                <span class="who">字节 · AI产品经理</span>
+              </div>
+              <div class="mc-bar"><span class="fill"></span></div>
+            </div>
+            <h2 class="sec">差距点</h2>
+            <div class="gap-list" data-od-id="jd-gaps">
+              <div class="gap-row"><span class="dot"></span><b>量化成果</b><span class="d">缺乏可量化的结果数据支撑</span></div>
+              <div class="gap-row"><span class="dot"></span><b>数据驱动</b><span class="d">缺少数据驱动决策的案例</span></div>
+              <div class="gap-row"><span class="dot"></span><b>项目管理</b><span class="d">项目管理表述偏弱</span></div>
+            </div>
+            <h2 class="sec">优化建议 <button class="link-inline" data-go="resume-risk" style="margin-left:auto;">另存为风险报告 ›</button></h2>
+            <div class="sugg-card" data-od-id="jd-sugg">
+              <button class="sugg-item" data-sugg-toggle data-od-id="sugg-1"><span class="ck-box on">✓</span><span>将「参与项目」改为「主导 XX，带来 Y 结果」</span></button>
+              <button class="sugg-item" data-sugg-toggle data-od-id="sugg-2"><span class="ck-box on">✓</span><span>补充 1 条数据驱动案例（A/B 测试提升转化率）</span></button>
+              <button class="sugg-item" data-sugg-toggle data-od-id="sugg-3"><span class="ck-box">✓</span><span>统一项目动词，突出结果导向与跨团队协作</span></button>
+            </div>
+            <button class="btn btn-primary btn-block" data-go="resume-versions" data-toast="已应用优化并重生成简历（原型演示）" data-od-id="resume-apply">应用优化并重生成简历</button>
+          </section>
+
+          <!-- ─── 27 多版本简历管理 ────────────────────────────────── -->
+          <section id="screen-resume-versions" class="screen" data-od-id="screen-resume-versions">
+            <div class="navhead">
+              <button class="back" data-go="resume" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+              <span class="title">多版本简历</span>
+            </div>
+            <div class="ver-list" data-od-id="version-list">
+              <button class="ver-row" data-go="resume-upload" data-od-id="version-1">
+                <span class="vi"><b>AI产品经理_标准版</b><span class="m">完整度 <span class="mono">85%</span> · 07-30 更新</span></span>
+                <span class="act">对比 ›</span>
+              </button>
+              <button class="ver-row" data-go="resume-upload" data-od-id="version-2">
+                <span class="vi"><b>字节跳动_定制版</b><span class="m">完整度 <span class="mono">90%</span> · 07-28 更新</span></span>
+                <span class="act">对比 ›</span>
+              </button>
+              <button class="ver-row" data-go="resume-upload" data-od-id="version-3">
+                <span class="vi"><b>腾讯_定制版</b><span class="m">完整度 <span class="mono">88%</span> · 07-25 更新</span></span>
+                <span class="act">对比 ›</span>
+              </button>
+            </div>
+            <h2 class="sec">版本对比</h2>
+            <div class="cmp-box" data-od-id="version-compare">
+              <div class="cmp-cols">
+                <div class="cmp-col">
+                  <div class="cc-head">AI产品经理_标准版</div>
+                  <div class="cc-row"><span class="k">教育背景</span>吉首大学 · 计算机</div>
+                  <div class="cc-row hl"><span class="k">项目经历</span>主导校园协同平台</div>
+                  <div class="cc-row hl"><span class="k">技能标签</span>Python · SQL · Axure</div>
+                </div>
+                <div class="cmp-col">
+                  <div class="cc-head">字节跳动_定制版</div>
+                  <div class="cc-row"><span class="k">教育背景</span>吉首大学 · 计算机</div>
+                  <div class="cc-row hl"><span class="k">项目经历</span>主导平台，转化率提升 18%</div>
+                  <div class="cc-row hl"><span class="k">技能标签</span>Python · SQL · 增长实验</div>
+                </div>
+              </div>
+            </div>
+            <div class="exp-row">
+              <button class="btn btn-outline" data-toast="已导出 Word 版本（原型演示）" data-od-id="export-word">导出 Word</button>
+              <button class="btn btn-primary" data-toast="已导出 PDF 版本（原型演示）" data-od-id="export-pdf">导出 PDF</button>
+            </div>
+          </section>
+
         </div>
 
         <div class="tabbar" data-od-id="tabbar">
@@ -1540,7 +1823,9 @@ h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; ma
     'practice-paper': 'practice', apply: 'apply', 'apply-detail': 'apply',
     'apply-timeline': 'apply', 'apply-offer': 'apply', mine: 'mine',
     'mine-profile': 'mine', 'mine-edit': 'mine', 'mine-member': 'mine',
-    'mine-order': 'mine', 'mine-settings': 'mine'
+    'mine-order': 'mine', 'mine-settings': 'mine', resume: 'home',
+    'resume-upload': 'home', 'resume-risk': 'home', 'resume-jd': 'home',
+    'resume-versions': 'home'
   };
 
   var toastTimer = null;
@@ -1578,7 +1863,8 @@ h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; ma
     ['面试', [['interview', '面试主页'], ['interview-live', '模拟面试 · 进行中'], ['interview-report', '面试报告'], ['interview-review', '复盘追踪'], ['interview-weekly', '每周报告']]],
     ['刷题', [['practice', '刷题主页'], ['practice-bank', '岗位题库'], ['practice-answer', '答题'], ['practice-result', '答题结果'], ['practice-wrong', '错题本'], ['practice-paper', '智能组卷']]],
     ['投递', [['apply', '投递主页'], ['apply-detail', '职位详情'], ['apply-timeline', '投递进度'], ['apply-offer', 'Offer 对比']]],
-    ['我的', [['mine', '我的'], ['mine-profile', '求职档案'], ['mine-edit', '编辑档案'], ['mine-member', '会员中心'], ['mine-order', '我的订单'], ['mine-settings', '设置']]]
+    ['我的', [['mine', '我的'], ['mine-profile', '求职档案'], ['mine-edit', '编辑档案'], ['mine-member', '会员中心'], ['mine-order', '我的订单'], ['mine-settings', '设置']]],
+    ['简历', [['resume', '简历中心'], ['resume-upload', '简历上传解析'], ['resume-risk', '简历风险检测'], ['resume-jd', 'JD 匹配优化'], ['resume-versions', '多版本简历']]]
   ];
   var palBox = document.getElementById('palette');
   var palHTML = '';
@@ -1621,6 +1907,12 @@ h2.sec { font-family: var(--font-display); font-size: 15px; font-weight: 600; ma
     }
     var toastEl = e.target.closest('[data-toast]');
     if (toastEl) { toast(toastEl.dataset.toast); return; }
+    var suggEl = e.target.closest('[data-sugg-toggle]');
+    if (suggEl) {
+      var cb = suggEl.querySelector('.ck-box');
+      if (cb) { cb.classList.toggle('on'); cb.textContent = cb.classList.contains('on') ? '✓' : ''; }
+      return;
+    }
   });
 
   /* ── 复盘追踪分段控件 ─────────────────────────────────────────── */
